@@ -4267,6 +4267,13 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   // Following a link closes it; the anchor still lands where it should.
   panel.addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
+
+  /* The logo sits in the bar rather than in the panel, so it is still on
+     screen and still clickable while the menu is open. Tapping it should
+     put the menu away as well as go home — otherwise you land at the top
+     of the page with the panel still covering it. */
+  const logo = document.querySelector('.nav__cell--logo');
+  if (logo) logo.addEventListener('click', () => { if (!panel.hidden) setOpen(false); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) setOpen(false); });
   // Growing past the breakpoint brings the bar's own links back, so the
   // panel would be stranded open over a nav that no longer needs it.
