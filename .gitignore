@@ -22,3 +22,9 @@ ehthumbs.db
 # Logs / temp
 *.log
 tmp/
+
+# Local build artefacts
+_*.html
+
+# Encoder source, kept locally so the ambient loop can be rebuilt. Not deployed.
+Audio/ambient.original.mp3

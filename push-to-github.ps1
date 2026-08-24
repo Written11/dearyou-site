@@ -5,10 +5,16 @@
 #     cd "$HOME\OneDrive\Documents\UPWORK\2026\Written\Website"
 #     powershell -ExecutionPolicy Bypass -File .\push-to-github.ps1
 #
-# Finds git and gh even when they are not on PATH yet (which is normal right
-# after installing them, until a new terminal window is opened).
+# Notes:
+#   - Finds git and gh even when they are not on PATH yet.
+#   - Native tools like gh write ordinary status messages to stderr, so this
+#     script checks exit codes rather than treating stderr as fatal.
 
-$ErrorActionPreference = 'Stop'
+# Deliberately NOT 'Stop': with 'Stop', any stderr output from git or gh is
+# promoted to a terminating error, which kills the script on messages that
+# are not failures at all.
+$ErrorActionPreference = 'Continue'
+
 Set-Location -Path $PSScriptRoot
 
 $RepoName   = 'Written'
@@ -32,6 +38,13 @@ function Find-Exe {
     return $null
 }
 
+function Fail([string]$Message) {
+    Write-Host ''
+    Write-Host "  $Message" -ForegroundColor Red
+    Write-Host ''
+    exit 1
+}
+
 Write-Host ''
 Write-Host '  Written -> GitHub' -ForegroundColor Cyan
 Write-Host '  -----------------' -ForegroundColor Cyan
@@ -44,12 +57,9 @@ $Git = Find-Exe -Name 'git' -Candidates @(
     '%LOCALAPPDATA%\Programs\Git\cmd\git.exe',
     '%LOCALAPPDATA%\Microsoft\WinGet\Links\git.exe'
 )
-
 if (-not $Git) {
     Write-Host '  git could not be found.' -ForegroundColor Red
-    Write-Host '  Install it with:' -ForegroundColor Yellow
-    Write-Host '      winget install --id Git.Git -e' -ForegroundColor White
-    Write-Host '  Then run this script again.' -ForegroundColor Yellow
+    Write-Host '  Install it with:  winget install --id Git.Git -e' -ForegroundColor Yellow
     exit 1
 }
 Write-Host "  git: $Git" -ForegroundColor DarkGray
@@ -62,75 +72,86 @@ $Gh = Find-Exe -Name 'gh' -Candidates @(
     '%LOCALAPPDATA%\Microsoft\WinGet\Links\gh.exe',
     '%LOCALAPPDATA%\GitHubCLI\gh.exe'
 )
-
 if (-not $Gh) {
-    Write-Host '  The GitHub CLI (gh) could not be found.' -ForegroundColor Yellow
-    Write-Host '  Install it with:' -ForegroundColor Yellow
-    Write-Host '      winget install --id GitHub.cli -e' -ForegroundColor White
-    Write-Host ''
-    Write-Host '  Or finish by hand:' -ForegroundColor Yellow
-    Write-Host "      1. Create an empty repo named '$RepoName' at https://github.com/new" -ForegroundColor White
-    Write-Host '         (do not add a README or .gitignore)' -ForegroundColor DarkGray
-    Write-Host '      2. Then run:' -ForegroundColor White
-    Write-Host "         git remote add origin https://github.com/<your-username>/$RepoName.git" -ForegroundColor White
-    Write-Host '         git push -u origin main' -ForegroundColor White
+    Write-Host '  The GitHub CLI (gh) could not be found.' -ForegroundColor Red
+    Write-Host '  Install it with:  winget install --id GitHub.cli -e' -ForegroundColor Yellow
     exit 1
 }
 Write-Host "  gh:  $Gh" -ForegroundColor DarkGray
 Write-Host ''
 
-# --- 3. initialise the repository --------------------------------------------
+# --- 3. line-ending hygiene --------------------------------------------------
+if (-not (Test-Path '.gitattributes')) {
+    @(
+        '* text=auto',
+        '',
+        '*.png  binary',
+        '*.jpg  binary',
+        '*.jpeg binary',
+        '*.pdf  binary',
+        '*.zip  binary'
+    ) | Set-Content -Path '.gitattributes' -Encoding ASCII
+    Write-Host '  Added .gitattributes.' -ForegroundColor DarkGray
+}
+
+# --- 4. initialise the repository --------------------------------------------
 if (Test-Path '.git') {
     Write-Host '  Repository already initialised.' -ForegroundColor DarkGray
 } else {
     Write-Host '  Initialising repository...' -ForegroundColor DarkGray
-    & $Git init -b main | Out-Null
+    & $Git init -b main *> $null
+    if ($LASTEXITCODE -ne 0) { Fail 'Could not initialise the repository.' }
 }
 
-& $Git add -A
+& $Git add -A *> $null
 
 $pending = & $Git status --porcelain
 if ($pending) {
-    & $Git commit -m 'Written landing page: initial commit' | Out-Null
+    & $Git commit -m 'Written landing page: initial commit' *> $null
+    if ($LASTEXITCODE -ne 0) { Fail 'Commit failed.' }
     Write-Host '  Committed.' -ForegroundColor DarkGray
 } else {
     Write-Host '  Nothing new to commit.' -ForegroundColor DarkGray
 }
 
-# --- 4. sign in --------------------------------------------------------------
-& $Gh auth status 2>&1 | Out-Null
+# --- 5. make sure we are signed in -------------------------------------------
+& $Gh auth status *> $null
 if ($LASTEXITCODE -ne 0) {
     Write-Host ''
     Write-Host '  Signing in to GitHub - follow the prompts below.' -ForegroundColor Yellow
     Write-Host '  Choose: GitHub.com  ->  HTTPS  ->  authenticate with a browser.' -ForegroundColor DarkGray
     Write-Host ''
     & $Gh auth login
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host '  Sign-in did not complete. Run the script again once you are signed in.' -ForegroundColor Red
-        exit 1
-    }
+    if ($LASTEXITCODE -ne 0) { Fail 'Sign-in did not complete. Run the script again once you are signed in.' }
 }
 
 $account = (& $Gh api user --jq .login)
-Write-Host ''
+if ($LASTEXITCODE -ne 0 -or -not $account) { Fail 'Could not read your GitHub account.' }
+$account = $account.Trim()
 Write-Host "  Signed in as $account." -ForegroundColor DarkGray
 
-# --- 5. create the remote and push -------------------------------------------
-& $Gh repo view "$account/$RepoName" 2>&1 | Out-Null
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "  Repository '$RepoName' already exists - pushing to it." -ForegroundColor DarkGray
-    & $Git remote remove origin 2>$null | Out-Null
-    & $Git remote add origin "https://github.com/$account/$RepoName.git"
-    & $Git push -u origin main
-} else {
-    Write-Host "  Creating '$RepoName' on GitHub ($Visibility)..." -ForegroundColor DarkGray
-    & $Gh repo create $RepoName "--$Visibility" --source . --remote origin --push
-}
+# --- 6. does the repository already exist? -----------------------------------
+# A "could not resolve to a Repository" message here is the normal answer for
+# a repo that does not exist yet - so only the exit code is consulted.
+& $Gh repo view "$account/$RepoName" *> $null
+$repoExists = ($LASTEXITCODE -eq 0)
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ''
-    Write-Host '  Push failed. See the message above.' -ForegroundColor Red
-    exit 1
+# --- 7. create and push ------------------------------------------------------
+if ($repoExists) {
+    Write-Host "  Repository '$RepoName' already exists - pushing to it." -ForegroundColor DarkGray
+
+    & $Git remote remove origin *> $null
+    & $Git remote add origin "https://github.com/$account/$RepoName.git"
+    if ($LASTEXITCODE -ne 0) { Fail 'Could not set the origin remote.' }
+
+    & $Git push -u origin main
+    if ($LASTEXITCODE -ne 0) { Fail 'Push failed. See the message above.' }
+}
+else {
+    Write-Host "  Creating '$RepoName' on GitHub ($Visibility)..." -ForegroundColor DarkGray
+
+    & $Gh repo create $RepoName "--$Visibility" --source . --remote origin --push
+    if ($LASTEXITCODE -ne 0) { Fail 'Could not create the repository. See the message above.' }
 }
 
 Write-Host ''

@@ -1,0 +1,307 @@
+/* ==========================================================================
+   Written — design tokens
+   Foundation layer. Every color, size and motion value in the site resolves
+   from here. Nothing below should appear as a literal anywhere else.
+   ========================================================================== */
+
+:root {
+
+  /* --- Swatches --------------------------------------------------------
+     Raw brand values. Components never reference these directly; they
+     reference the role tokens further down. */
+
+  /* Wine — the brand ground */
+  --swatch-ink:        #14090C;  /* near-black, red undertone. No pure black. */
+  --swatch-wine-900:   #3A0512;  /* deepest — footer, dark hero */
+  --swatch-wine-800:   #5C0A1E;  /* THE brand burgundy */
+  --swatch-wine-700:   #75142C;  /* raised surface / hover on wine */
+  --swatch-wine-600:   #8E2038;  /* hairline divider on wine */
+  --swatch-wine-500:   #C06A7E;  /* interactive border on wine — clears 3:1 */
+
+  /* Red — accent. Two tiers, because one red cannot serve both grounds. */
+  --swatch-red-700:    #C10825;  /* red TEXT on paper — 5.87:1 */
+  --swatch-red-500:    #E30B2C;  /* the brand red — fills, rules, graphics */
+  --swatch-red-400:    #FF3A54;  /* accent UI on wine — 3.94:1, large/non-text */
+  --swatch-red-300:    #FF6B7A;  /* small red text on wine — 5.03:1 */
+  --swatch-red-050:    #FCE8EB;  /* tint fill on paper */
+
+  /* Paper — warm neutrals, biased toward the wine so nothing reads grey-blue */
+  --swatch-paper:      #FAF6F2;  /* main light ground. No pure white. */
+  --swatch-paper-2:    #F1EAE4;  /* card / alternating section */
+  --swatch-sand:       #E2D8D0;  /* hairline divider on paper */
+  --swatch-stone-400:  #8B8079;  /* interactive border on paper — 3.58:1 */
+  --swatch-stone-600:  #7C6F68;  /* secondary text on paper — 4.51:1 */
+  --swatch-clay:       #D8C3C8;  /* secondary text on wine — 8.28:1 */
+
+  /* Semantic — deliberately outside the brand hues */
+  --swatch-success:      #1F7A55;  /* on paper — 4.92:1 */
+  --swatch-success-lift: #5FCF9E;  /* on wine  — 7.19:1 */
+  --swatch-warning:      #9C610D;  /* on paper — 4.73:1 */
+
+
+  /* --- Roles: paper theme (default) ------------------------------------ */
+
+  --bg:            var(--swatch-paper);
+  --bg-raised:     var(--swatch-paper-2);
+  --text:          var(--swatch-ink);
+  --text-heading:  var(--swatch-wine-900);
+  --text-muted:    var(--swatch-stone-600);
+  --accent:        var(--swatch-red-500);
+  --accent-text:   var(--swatch-red-700);
+  --line:          var(--swatch-sand);
+  --line-strong:   var(--swatch-stone-400);
+
+  --btn-bg:           var(--swatch-wine-800);
+  --btn-text:         var(--swatch-paper);
+  --btn-bg-hover:     var(--swatch-wine-700);
+  --btn-ghost-border: var(--swatch-stone-400);
+  --btn-ghost-text:   var(--swatch-wine-900);
+
+  --state-ok:      var(--swatch-success);
+  --state-warn:    var(--swatch-warning);
+  --state-error:   var(--swatch-red-700);
+  --focus-ring:    var(--swatch-red-500);
+
+  --selection-bg:   var(--swatch-red-050);
+  --selection-text: var(--swatch-wine-900);
+
+
+  /* --- Type ------------------------------------------------------------
+     Two families. The serif is an EMPHASIS SPAN inside a heading — same
+     size, same tracking, same case as the sans beside it. It is never a
+     heading level of its own.
+
+     The display face is Instrument Serif: flat, sheared terminals and no ball
+     serifs anywhere, which is why it replaced Playfair. Single weight, 400,
+     roman and italic. Free, self-hostable, no licence to renew.
+     (IvyPresto Headline stays a paid option if it is ever wanted; it would
+     need an Adobe Fonts Web Project on our own account.) */
+
+  --font-display: "Instrument Serif", "Times New Roman", serif;
+  --font-sans:    "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-mono:    ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-display: 400;  /* Instrument Serif ships one weight. */
+
+  /* Fluid, 320px -> 1600px */
+  --size-display-xl: clamp(3rem,      1.8750rem + 5.6250vw, 7.5rem);   /*  48 -> 120 */
+  --size-display-l:  clamp(2.5rem,    1.8750rem + 3.1250vw, 5rem);     /*  40 ->  80 */
+  --size-display-m:  clamp(2rem,      1.6250rem + 1.8750vw, 3.5rem);   /*  32 ->  56 */
+  --size-display-s:  clamp(1.5rem,    1.3125rem + 0.9375vw, 2.25rem);  /*  24 ->  36 */
+  --size-heading:    clamp(1.25rem,   1.1875rem + 0.3125vw, 1.5rem);   /*  20 ->  24 */
+  --size-body-l:     clamp(1.0625rem, 1.0156rem + 0.2344vw, 1.25rem);  /*  17 ->  20 */
+  --size-body:       clamp(1rem,      0.9844rem + 0.0781vw, 1.0625rem);/*  16 ->  17 */
+  --size-small:      clamp(0.875rem,  0.8594rem + 0.0781vw, 0.9375rem);/*  14 ->  15 */
+  --size-label:      clamp(0.75rem,   0.7344rem + 0.0781vw, 0.8125rem);/*  12 ->  13 */
+  /* Button and nav text. Smaller than a label — the reference runs its
+     controls at roughly 0.29x the headline, well under body size. */
+  --size-control:    clamp(0.6875rem, 0.6500rem + 0.1000vw, 0.75rem);  /*  11 ->  12 */
+  /* One step under --size-control. Fine print only: the copyright line and
+     the legal links in the footer bar. Nothing that has to be read at a
+     glance should sit at this size. */
+  --size-fineprint:  clamp(0.6250rem, 0.5900rem + 0.1400vw, 0.6875rem);/*  10 ->  11 */
+
+  --leading-display: 0.95;
+  --leading-tight:   1.15;
+  --leading-body:    1.5;
+
+  --tracking-display: -0.025em;  /* the uppercase display lockup */
+  --tracking-normal:   0em;
+  --tracking-label:    0.08em;   /* uppercase micro-labels only */
+
+
+  /* --- Layout ---------------------------------------------------------- */
+
+  --page-max:  90rem;    /* 1440px */
+  --read-max:  38rem;    /* ~65ch of body copy */
+  --gutter:    clamp(1.25rem, 0.75rem + 2.5vw, 3rem);
+  --grid-gap:  clamp(1rem, 0.5rem + 2vw, 2rem);
+  --grid-cols: 12;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --section-y:       clamp(4rem, 2rem + 10vw, 10rem);
+  --section-y-large: clamp(6rem, 3rem + 15vw, 15rem);
+
+  /* Squared, not rounded. The reference sits at 2.67px on every control and
+     5.33px on the nav bar itself; nothing on that site is a pill. */
+  --radius-xs:   0.1875rem;  /*  3px — buttons, icon boxes, nav links */
+  --radius-sm:   0.3125rem;  /*  5px — the nav bar, cards */
+  --radius-md:   0.5rem;
+  --radius-lg:   0.75rem;
+  --radius-pill: 100vw;      /* status dots only, never a button */
+  --border-width: 1px;
+
+  /* Controls.
+     --control-h is THE button height for the whole site. Every button in
+     every section uses it, so they all line up. The nav bar is taller and
+     has its own token.
+
+     Proportions are taken from the reference, measured against its own button
+     height: padding 0.43x, icon square 0.57x, gap 0.29x. Padding is equal on
+     both sides; the icon square sits inside the right padding, never flush
+     against the edge. */
+  --nav-h:          3rem;       /* 48px — the floating nav bar */
+  --control-h:      2.1875rem;  /* 35px — every button, everywhere */
+  --control-icon:   1.25rem;    /* 20px — the square an icon sits in */
+  --control-pad:    0.9375rem;  /* 15px — equal left and right */
+  --control-gap:    0.625rem;   /* 10px — label to icon square */
+
+
+  /* --- Motion ---------------------------------------------------------- */
+
+  --ease:          cubic-bezier(0.65, 0, 0, 1);  /* fast out, long settle */
+  --duration:      0.6s;
+  --duration-fast: 0.24s;
+}
+
+
+/* --- Roles: wine theme -------------------------------------------------
+   Applied per-section with class="theme-wine", not per-page. Sections
+   alternate paper and wine down the length of the page. */
+
+.theme-wine {
+  --bg:            var(--swatch-wine-800);
+  --bg-raised:     var(--swatch-wine-700);
+  --text:          var(--swatch-paper);
+  --text-heading:  var(--swatch-paper);
+  --text-muted:    var(--swatch-clay);
+  --accent:        var(--swatch-red-400);
+  --accent-text:   var(--swatch-red-300);
+  --line:          var(--swatch-wine-600);
+  --line-strong:   var(--swatch-wine-500);
+
+  --btn-bg:           var(--swatch-paper);
+  --btn-text:         var(--swatch-wine-800);
+  --btn-bg-hover:     var(--swatch-clay);
+  --btn-ghost-border: var(--swatch-wine-500);
+  --btn-ghost-text:   var(--swatch-paper);
+
+  --state-ok:      var(--swatch-success-lift);
+  --state-error:   var(--swatch-red-300);
+  --focus-ring:    var(--swatch-red-400);
+
+  --selection-bg:   var(--swatch-red-400);
+  --selection-text: var(--swatch-wine-900);
+}
+
+.theme-ink {
+  --bg:           var(--swatch-wine-900);
+  --bg-raised:    var(--swatch-wine-800);
+  --text:         var(--swatch-paper);
+  --text-heading: var(--swatch-paper);
+  --text-muted:   var(--swatch-clay);
+  --accent:       var(--swatch-red-400);
+  --accent-text:  var(--swatch-red-300);
+  --line:         var(--swatch-wine-800);
+  --line-strong:  var(--swatch-wine-600);
+
+  --btn-bg:       var(--swatch-paper);
+  --btn-text:     var(--swatch-wine-900);
+  --btn-bg-hover: var(--swatch-clay);
+}
+
+
+/* --- Base --------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--size-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Any themed section repaints its own ground. */
+.theme-wine, .theme-ink { background: var(--bg); color: var(--text); }
+
+/* --- Grain -------------------------------------------------------------
+   One fixed layer of monochrome noise over the whole page, generated by an
+   inline SVG turbulence filter so there is no image to ship. `overlay` keeps
+   the hue underneath and only nudges light and dark, which is what stops it
+   greying out the wine.
+
+   The feComponentTransfer is what makes it visible at all. feTurbulence
+   clusters its output around mid-grey, and overlay treats mid-grey as a
+   no-op — so without stretching the contrast first, the blend cancels the
+   texture no matter how high the opacity goes. slope 3 / intercept -1 pushes
+   the noise out toward black and white, which overlay can then act on.
+
+   It takes TWO layers, because no single blend mode covers both grounds.
+   `overlay` multiplies where the base is dark, so on wine-900 (luminance
+   ~0.03) the result is 2 x 0.03 x noise — a change too small to see. And
+   `screen` on the cream would just wash it out. So: overlay carries the
+   light sections, screen carries the dark ones, and each is close to inert
+   where the other one is doing the work.
+
+   Opacity is the dial on each. Past ~0.24 on the light layer it stops
+   looking like paper and starts looking like a dirty screen. */
+.grain{
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3' intercept='-1'/%3E%3CfeFuncG type='linear' slope='3' intercept='-1'/%3E%3CfeFuncB type='linear' slope='3' intercept='-1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+/* Carries the paper and cream sections. */
+.grain--tone{ opacity: 0.16; mix-blend-mode: overlay; }
+/* Carries the wine sections, where overlay has nothing to bite on. */
+.grain--lift{ opacity: 0.05; mix-blend-mode: screen; }
+
+@media print { .grain { display: none; } }
+
+::selection { background: var(--selection-bg); color: var(--selection-text); }
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* The display lockup. Apply .display to the heading; wrap the emphasised
+   words in <em class="serif"> — same size, same tracking, family swap only. */
+.display {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
+  text-wrap: balance;
+  color: var(--text-heading);
+}
+.display .serif {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: var(--weight-regular);
+}
+
+.label {
+  font-size: var(--size-label);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
+}
+
+.prose { max-width: var(--read-max); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
