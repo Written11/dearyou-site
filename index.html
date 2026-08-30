@@ -394,6 +394,69 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 
 /* =====================================================================
+   INTERLUDE — Epigraph
+   Unnumbered on purpose. The numbered sections carry the argument; this is
+   a breath taken between the hero and the start of it, so giving it a
+   number would promise a beat it does not deliver.
+
+   It also hands the page its first daylight. The hero is wine-900 and
+   section two's panel is wine-800 across the full screen, so without
+   something light in between the site opens on two dark screens running
+   into each other.
+
+   One quote, drawn fresh on every load. Nothing is remembered between
+   loads and nothing can be: the storage notice promises this device holds
+   one thing and one thing only, so the last pick cannot be kept to avoid a
+   repeat. Two loads in a row can land the same line.
+   ===================================================================== */
+.epi{
+  background:var(--swatch-paper);
+  padding-block:clamp(4rem, 2.5rem + 6vw, 8rem);
+  padding-inline:var(--gutter);
+}
+.epi__inner{
+  max-width:44rem; margin-inline:auto;
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center;
+}
+/* Every quote but the chosen one carries `hidden`, so only one is ever in
+   the flow and the band stands exactly as tall as the line it is showing
+   rather than as tall as the longest one it might have shown. */
+.epi__card{
+  margin:0;
+  display:flex; flex-direction:column; align-items:center;
+  gap:clamp(1.5rem, 1rem + 2vw, 2.5rem);
+}
+/* Any `display` set by an author rule beats the UA's `[hidden]`, whatever
+   the specificity, so the seven that were meant to be put away rendered in
+   a column under the one that was chosen. Every display declaration on a
+   thing that can be hidden needs this line beside it. */
+.epi__card[hidden]{display:none;}
+/* Held well under the voices quote at 3.5rem. This one is passing through;
+   that one is evidence and is allowed to be the larger of the two. */
+.epi__quote{
+  margin:0;
+  font-family:var(--font-display); font-weight:var(--weight-regular);
+  font-size:clamp(1.5rem, 1.05rem + 2.2vw, 2.5rem);
+  line-height:1.25; letter-spacing:0;
+  color:var(--swatch-wine-900);
+  text-wrap:balance;
+}
+/* The marks are set here, not typed into the copy, so the quotes stay plain
+   text and the curly pair can never come out straight. */
+.epi__quote::before{content:'\201C';}
+.epi__quote::after{content:'\201D';}
+/* All that is left under the quote now the names have gone. It still earns
+   its place: it stops the line ending in mid-air, and it is the only red on
+   the screen at this point. Red as a rule, which is a thing red is allowed
+   to be. Kept to the same width the attribution rule had, so the proportion
+   under the quote did not change when the name came off it. */
+.epi__rule{
+  display:block; width:clamp(1.75rem, 1rem + 2.5vw, 3rem); height:1px;
+  background:var(--swatch-red-500);
+}
+
+/* =====================================================================
    SECTION 02 — Features
    A tall scroll track with a sticky panel. Cards ride in one at a time on
    scroll progress and settle into a fanned stack in the middle of the panel.
@@ -2334,10 +2397,91 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 
   <div class="hero__foot">
     <p class="hero__caption">Sealed until you say <em>&middot;</em> Nobody at Written can read it</p>
-    <a class="hero__scroll" href="#vault"><span>Scroll</span></a>
+    <a class="hero__scroll" href="#epigraph"><span>Scroll</span></a>
   </div>
 
 </section>
+
+<!-- ================= INTERLUDE — EPIGRAPH =================
+     One quote, different on every load. All eight ship in the markup so the
+     section reads with no script at all; the picker below hides the seven
+     it did not choose.
+
+     The lines run unattributed on the page, so they read as the site's own
+     thought rather than as a wall of borrowed names. Every one is public
+     domain, and the source is kept in the comment beside it so we still
+     know where each came from.
+
+     These are borrowed voices, not customer ones. The testimonials from
+     real families are section 06, and the two are kept apart on purpose. -->
+<section class="epi" id="epigraph" aria-label="Epigraph">
+  <div class="epi__inner">
+
+    <!-- Emily Dickinson -->
+    <figure class="epi__card" data-epi>
+      <blockquote class="epi__quote">A letter always seemed to me like immortality.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+    <!-- John Donne -->
+    <figure class="epi__card" data-epi hidden>
+      <blockquote class="epi__quote">More than kisses, letters mingle souls.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+    <!-- Cicero -->
+    <figure class="epi__card" data-epi hidden>
+      <blockquote class="epi__quote">The life of the dead is placed in the memory of the living.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+    <!-- Oscar Wilde -->
+    <figure class="epi__card" data-epi hidden>
+      <blockquote class="epi__quote">Memory is the diary that we all carry about with us.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+    <!-- Lord Byron -->
+    <figure class="epi__card" data-epi hidden>
+      <blockquote class="epi__quote">Letter writing is the only device for combining solitude with good company.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+    <!-- Goethe -->
+    <figure class="epi__card" data-epi hidden>
+      <blockquote class="epi__quote">Letters are among the most significant memorial a person can leave behind.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+    <!-- L. M. Montgomery -->
+    <figure class="epi__card" data-epi hidden>
+      <blockquote class="epi__quote">Nothing is ever really lost to us as long as we remember it.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+    <!-- Chinese proverb -->
+    <figure class="epi__card" data-epi hidden>
+      <blockquote class="epi__quote">The palest ink is better than the best memory.</blockquote>
+      <span class="epi__rule" aria-hidden="true"></span>
+    </figure>
+
+  </div>
+</section>
+<script>
+/* Deliberately here and not in the script at the foot of the page. By the
+   time that one runs the section has already been painted, so the visitor
+   would watch the first quote sit there and then swap for another. Running
+   inline, on parse, the choice is made before the browser has anything to
+   show.
+
+   No storage, by design — see the note above the styles. */
+(() => {
+  const cards = document.querySelectorAll('[data-epi]');
+  if (cards.length < 2) return;
+  const pick = Math.floor(Math.random() * cards.length);
+  cards.forEach((card, i) => { card.hidden = i !== pick; });
+})();
+</script>
 
 <!-- ================= SECTION 02 — FEATURES ================= -->
 <section class="feat" id="vault" style="--cards:4">
@@ -2523,9 +2667,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
           <!-- The cover keeps the same 2:3 card as every other row. When a
                recording has no artwork the card drops to one flat colour and
                carries the title itself, so the frame is never empty. -->
-          <figure class="leave__art vp__cover" data-cover="image">
-            <!-- Pexels 6860630 -->
-            <img data-cover-img src="Images/Voice.jpeg" alt="" width="1600" height="1067" loading="lazy">
+          <figure class="leave__art vp__cover" data-cover="none">
             <p class="vp__coverTitle" data-cover-title></p>
             <!-- Filled from the track's `script` cues; tracks along as the
                  recording plays, the way a lyrics sheet does. -->
@@ -3174,7 +3316,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   const VOICE = [
     {
       src: 'Audio/voice-01.mp3', label: 'Voice note 01', length: '00:42',
-      cover: 'Images/Voice.jpeg',
+      cover: '',
       script: [
         {t: 0,  line: 'Children forget how a parent sounds'},
         {t: 7,  line: 'long before they forget what a parent looked like.'},
@@ -3197,7 +3339,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
     },
     {
       src: 'Audio/voice-03.mp3', label: 'Voice note 03', length: '00:29',
-      cover: 'Images/Voice.jpeg',
+      cover: '',
       script: [
         {t: 0,  line: 'A birthday, a first day of school,'},
         {t: 7,  line: 'the advice you would rather give in person.'},
@@ -4150,6 +4292,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
      three tiers, which should step across the row. */
   const BLOCKS = [
     '.hero__content',
+    // Matches all eight epigraph figures, seven of which are hidden. An
+    // observer on a hidden element simply never fires, so the seven cost
+    // nothing and the one on show still arrives quote first, rule second.
+    '.epi__card',
     '.feat__side',
     '.steps__head',
     '.leave__body',
@@ -4423,10 +4569,10 @@ window.Written = window.Written || {};
 })();
 
 /* ---------------------------------------------------------------------
-   Every "Join the waitlist" on the page sends you to the one field in the
-   footer. Your own copy says the product is in private beta and that
-   recipients "receive a private link, no app to install" — so there is
-   nothing to download yet, and no store to send anyone to.
+   Every call-to-action on the page sends you to the one waitlist field in
+   the footer. The product is in private beta and recipients receive a
+   private link with no app to install, so there is nothing to download yet
+   and no store to send anyone to.
    --------------------------------------------------------------------- */
 (() => {
   const field = document.getElementById('waitlist-email');
