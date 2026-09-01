@@ -334,9 +334,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 /* The floor matters as much as the ceiling: at 28px the headline fell to
    1.7x the lead and stopped dominating on phones. 32px holds it near 2.1x. */
 .hero__title{
-  /* Sized to the real headline: at 40px "The things you would say" broke
-     mid-phrase in the half-width column. At 34px it holds one line and the
-     second clause wraps cleanly. */
+  /* Sized to the real headline. Set against the previous one, where at 40px
+     "The things you would say" broke mid-phrase in the half-width column
+     and 34px held it on one line. The current first line is shorter, so the
+     ceiling has room in it if the headline ever grows again. */
   font-size:clamp(1.75rem, 0.9rem + 2.2vw, 2.125rem);
   /* `wrap`, not `normal` — the text-wrap shorthand only takes
      wrap|nowrap|balance|pretty|stable, so `normal` is dropped and .display's
@@ -392,72 +393,46 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 @media (prefers-reduced-motion:reduce){
   .hero__scroll span{animation:none; opacity:1;}
 }
-
 /* =====================================================================
-   INTERLUDE — Epigraph
-   Unnumbered on purpose. The numbered sections carry the argument; this is
-   a breath taken between the hero and the start of it, so giving it a
-   number would promise a beat it does not deliver.
+   SECTION 02 — Quote
+   One of four lines, drawn fresh on every page load. It is also the first
+   daylight the page shows: the hero is wine-900 and section three's panel
+   is wine-800 across the full screen, so without a light band here the site
+   opens on two dark screens running into each other.
 
-   It also hands the page its first daylight. The hero is wine-900 and
-   section two's panel is wine-800 across the full screen, so without
-   something light in between the site opens on two dark screens running
-   into each other.
-
-   One quote, drawn fresh on every load. Nothing is remembered between
-   loads and nothing can be: the storage notice promises this device holds
-   one thing and one thing only, so the last pick cannot be kept to avoid a
-   repeat. Two loads in a row can land the same line.
+   Sized deliberately under the testimonial quote in section 07. These are
+   the site talking about itself; those are families talking, and the larger
+   type belongs to the families.
    ===================================================================== */
 .epi{
   background:var(--swatch-paper);
-  padding-block:clamp(4rem, 2.5rem + 6vw, 8rem);
+  padding-block:clamp(4rem, 2.5rem + 6vw, 7rem);
   padding-inline:var(--gutter);
 }
 .epi__inner{
-  max-width:44rem; margin-inline:auto;
+  max-width:48rem; margin-inline:auto;
   display:flex; flex-direction:column; align-items:center;
   text-align:center;
 }
-/* Every quote but the chosen one carries `hidden`, so only one is ever in
-   the flow and the band stands exactly as tall as the line it is showing
-   rather than as tall as the longest one it might have shown. */
-.epi__card{
-  margin:0;
-  display:flex; flex-direction:column; align-items:center;
-  gap:clamp(1.5rem, 1rem + 2vw, 2.5rem);
-}
-/* Any `display` set by an author rule beats the UA's `[hidden]`, whatever
-   the specificity, so the seven that were meant to be put away rendered in
-   a column under the one that was chosen. Every display declaration on a
-   thing that can be hidden needs this line beside it. */
-.epi__card[hidden]{display:none;}
-/* Held well under the voices quote at 3.5rem. This one is passing through;
-   that one is evidence and is allowed to be the larger of the two. */
+/* The three that were not drawn carry `hidden`, so only one is ever in the
+   flow and the band stands exactly as tall as the line it is showing. The
+   height can differ from load to load, which costs nothing: the reader only
+   ever sees one of them, and nothing moves once the page is painted. */
 .epi__quote{
   margin:0;
   font-family:var(--font-display); font-weight:var(--weight-regular);
-  font-size:clamp(1.5rem, 1.05rem + 2.2vw, 2.5rem);
-  line-height:1.25; letter-spacing:0;
+  font-size:clamp(1.25rem, 0.95rem + 1.5vw, 2rem);
+  line-height:1.3; letter-spacing:0;
   color:var(--swatch-wine-900);
   text-wrap:balance;
 }
-/* The marks are set here, not typed into the copy, so the quotes stay plain
+/* The marks are set here, not typed into the copy, so the lines stay plain
    text and the curly pair can never come out straight. */
 .epi__quote::before{content:'\201C';}
 .epi__quote::after{content:'\201D';}
-/* All that is left under the quote now the names have gone. It still earns
-   its place: it stops the line ending in mid-air, and it is the only red on
-   the screen at this point. Red as a rule, which is a thing red is allowed
-   to be. Kept to the same width the attribution rule had, so the proportion
-   under the quote did not change when the name came off it. */
-.epi__rule{
-  display:block; width:clamp(1.75rem, 1rem + 2.5vw, 3rem); height:1px;
-  background:var(--swatch-red-500);
-}
 
 /* =====================================================================
-   SECTION 02 — Features
+   SECTION 03 — Vault intro
    A tall scroll track with a sticky panel. Cards ride in one at a time on
    scroll progress and settle into a fanned stack in the middle of the panel.
    ===================================================================== */
@@ -594,7 +569,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 
 /* =====================================================================
-   SECTION 03 — How it works
+   SECTION 04 — How it works
    Three step cards that stack. Pure CSS: each card is sticky at a slightly
    lower offset than the one before, so the next slides up over it and
    leaves the previous card's top edge showing.
@@ -726,7 +701,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 
 /* =====================================================================
-   SECTION 04 — What you can leave
+   SECTION 05 — What you can leave
    Layout borrowed from izanami: a sticky vertical rail, then one ruled row
    per item with the number sitting low-left and the artwork on the right.
    Typography stays ours — theirs is all-serif sentence case, which would
@@ -1367,7 +1342,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 
 /* =====================================================================
-   SECTION 05 — Why now
+   SECTION 06 — Why now
    A single centred statement on a full-bleed dark ground, after the
    izanami "Who we are" panel: mark on top, serif throughout, ruled link
    at the foot, section label running up the left edge.
@@ -1475,7 +1450,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 
 /* =====================================================================
-   SECTION 06 — Voices
+   SECTION 07 — Testimonials
    Sits before pricing on purpose: these are evidence for the decision, so
    they belong ahead of it. Also a step down from the ink of "Why now" into
    the daylight of pricing, rather than swinging straight from the most
@@ -1515,16 +1490,27 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 .voice__role{
   margin:0; font-size:var(--size-body); color:var(--swatch-stone-600);
 }
-/* Short rules under the quote — enough to say "there is more than one". */
+/* Short rules under the quote — enough to say "there is more than one".
+   Identical mechanism to the section 02 ticks, so the two carousels on the
+   page read as one control and not two.
+
+   The rule is drawn on ::after and the button padded out around it. As a
+   bare 2px-tall element the button was a real rule and an impossible touch
+   target; now the hit area is 24px and the mark stays 2px. */
 .voices__ticks{display:flex; gap:var(--space-2);}
 .voices__tick{
-  width:2.5rem; height:2px; padding:0; border:0; cursor:pointer;
-  background:var(--swatch-sand);
-  transition:background-color var(--duration-fast) var(--ease),
-             width var(--duration-fast) var(--ease);
+  width:2.5rem; padding:0.6875rem 0; border:0; background:none; cursor:pointer;
+  display:flex; align-items:center;
+  transition:width var(--duration-fast) var(--ease);
 }
-.voices__tick:hover{background:var(--swatch-stone-400);}
-.voices__tick.is-on{background:var(--swatch-red-500); width:3.5rem;}
+.voices__tick::after{
+  content:''; display:block; width:100%; height:2px;
+  background:var(--swatch-sand);
+  transition:background-color var(--duration-fast) var(--ease);
+}
+.voices__tick:hover::after{background:var(--swatch-stone-400);}
+.voices__tick.is-on{width:3.5rem;}
+.voices__tick.is-on::after{background:var(--swatch-red-500);}
 
 .voices__quotes{position:relative; display:grid;}
 .voice__quote{
@@ -1603,7 +1589,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 
 /* =====================================================================
-   SECTION 07 — Pricing
+   SECTION 08 — Pricing
    The one plain three-up on the page, and deliberately so: a comparison
    wants to be compared, side by side, with no scroll choreography in the
    way. Light ground straight after the ink of "Why now" — this is the
@@ -2367,8 +2353,8 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       <p class="hero__eyebrow">A private vault</p>
 
       <h1 class="display hero__title" data-words>
-        The things you would say<br>
-        <em class="serif">if you could sit down together.</em>
+        Say everything now.<br>
+        <em class="serif">They&#8217;ll read it when the time is right.</em>
       </h1>
 
       <!-- Trimmed from the full paragraph in the source file. The middle list
@@ -2377,7 +2363,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
            the timespan, which is the part that lands. -->
       <p class="hero__lead">
         A private vault for parents who cannot be there right now. Sealed until
-        you decide your children are ready, a week from now or twenty years.
+        you decide your children are ready, in a week, or in twenty years.
       </p>
 
       <div class="hero__actions">
@@ -2396,100 +2382,73 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   </div>
 
   <div class="hero__foot">
-    <p class="hero__caption">Sealed until you say <em>&middot;</em> Nobody at Written can read it</p>
+    <p class="hero__caption">Sealed <em>&middot;</em> Encrypted <em>&middot;</em> Private</p>
     <a class="hero__scroll" href="#epigraph"><span>Scroll</span></a>
   </div>
 
 </section>
 
-<!-- ================= INTERLUDE — EPIGRAPH =================
-     One quote, different on every load. All eight ship in the markup so the
-     section reads with no script at all; the picker below hides the seven
-     it did not choose.
+<!-- ================= SECTION 02 — QUOTE =================
+     The four lines from the amendments of 31 Aug 2026, in the order given.
+     One of them shows, chosen fresh on every page load.
 
-     The lines run unattributed on the page, so they read as the site's own
-     thought rather than as a wall of borrowed names. Every one is public
-     domain, and the source is kept in the comment beside it so we still
-     know where each came from.
+     The amendments asked for a carousel with ticks or arrows. Overruled by
+     the user on 1 Sep 2026: the reload is the mechanism, so there is
+     nothing for a reader to operate and no controls to draw. All four ship
+     in the markup, so the section still reads with no script at all.
 
-     These are borrowed voices, not customer ones. The testimonials from
-     real families are section 06, and the two are kept apart on purpose. -->
-<section class="epi" id="epigraph" aria-label="Epigraph">
+     No storage, deliberately: the first-visit card promises this device
+     holds one thing and one thing only, so the last pick cannot be kept to
+     avoid a repeat. Two loads in a row can land the same line. -->
+<section class="epi" id="epigraph" aria-label="Why families use Written">
   <div class="epi__inner">
 
-    <!-- Emily Dickinson -->
-    <figure class="epi__card" data-epi>
-      <blockquote class="epi__quote">A letter always seemed to me like immortality.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
+    <blockquote class="epi__quote" data-epi>
+      Some words can&#8217;t be said today. A birthday missed, a question
+      unanswered, an I love you with nowhere to land. Written holds them,
+      exactly as you meant them, until they can finally be heard.
+    </blockquote>
 
-    <!-- John Donne -->
-    <figure class="epi__card" data-epi hidden>
-      <blockquote class="epi__quote">More than kisses, letters mingle souls.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
+    <blockquote class="epi__quote" data-epi hidden>
+      There are things a child should hear from their parent, not about them.
+      Written keeps your words safe until the day they can finally land.
+    </blockquote>
 
-    <!-- Cicero -->
-    <figure class="epi__card" data-epi hidden>
-      <blockquote class="epi__quote">The life of the dead is placed in the memory of the living.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
+    <blockquote class="epi__quote" data-epi hidden>
+      You don&#8217;t get to choose when life gets in the way. You can choose
+      that your voice still gets through.
+    </blockquote>
 
-    <!-- Oscar Wilde -->
-    <figure class="epi__card" data-epi hidden>
-      <blockquote class="epi__quote">Memory is the diary that we all carry about with us.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
-
-    <!-- Lord Byron -->
-    <figure class="epi__card" data-epi hidden>
-      <blockquote class="epi__quote">Letter writing is the only device for combining solitude with good company.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
-
-    <!-- Goethe -->
-    <figure class="epi__card" data-epi hidden>
-      <blockquote class="epi__quote">Letters are among the most significant memorial a person can leave behind.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
-
-    <!-- L. M. Montgomery -->
-    <figure class="epi__card" data-epi hidden>
-      <blockquote class="epi__quote">Nothing is ever really lost to us as long as we remember it.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
-
-    <!-- Chinese proverb -->
-    <figure class="epi__card" data-epi hidden>
-      <blockquote class="epi__quote">The palest ink is better than the best memory.</blockquote>
-      <span class="epi__rule" aria-hidden="true"></span>
-    </figure>
+    <blockquote class="epi__quote" data-epi hidden>
+      A letter unsent is not a letter unmeant. Written keeps it ready for the
+      moment you couldn&#8217;t plan for.
+    </blockquote>
 
   </div>
 </section>
 <script>
 /* Deliberately here and not in the script at the foot of the page. By the
    time that one runs the section has already been painted, so the visitor
-   would watch the first quote sit there and then swap for another. Running
+   would watch the first line sit there and then swap for another. Running
    inline, on parse, the choice is made before the browser has anything to
-   show.
-
-   No storage, by design — see the note above the styles. */
+   show. */
 (() => {
-  const cards = document.querySelectorAll('[data-epi]');
-  if (cards.length < 2) return;
-  const pick = Math.floor(Math.random() * cards.length);
-  cards.forEach((card, i) => { card.hidden = i !== pick; });
+  const lines = document.querySelectorAll('[data-epi]');
+  if (lines.length < 2) return;
+  const pick = Math.floor(Math.random() * lines.length);
+  lines.forEach((line, i) => { line.hidden = i !== pick; });
 })();
 </script>
 
-<!-- ================= SECTION 02 — FEATURES ================= -->
+<!-- ================= SECTION 03 — VAULT INTRO ================= -->
 <section class="feat" id="vault" style="--cards:4">
   <div class="feat__rail">
     <div class="feat__panel theme-wine">
 
       <div class="feat__side">
-        <p class="label">A private vault</p>
+        <!-- Only this one changed. The hero eyebrow above still reads
+             "A private vault" and was not part of the amendments. -->
+        <p class="label">A private safe space</p>
         <h2 class="display feat__title">
           Written is a vault, and<br>
           <em class="serif">you hold the key.</em>
@@ -2519,7 +2478,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
               <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" stroke="none"/>
             </svg>
           </span>
-          <p class="usp__note">Encrypted end to end. Nobody at Written can read a word of it.</p>
+          <p class="usp__note">Encrypted end to end. No one at Written can ever read it.</p>
         </li>
         <li class="usp" style="--i:1; --rot:-2.5deg">
           <h3 class="usp__title">Sealed until you say</h3>
@@ -2530,7 +2489,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
           </span>
-          <p class="usp__note">Release by hand, on a date, or at a birthday you choose in advance.</p>
+          <p class="usp__note">You choose when the time is right, a certain date, a birthday, or in person.</p>
         </li>
         <li class="usp" style="--i:2; --rot:2.5deg">
           <h3 class="usp__title">Nothing expires</h3>
@@ -2540,6 +2499,8 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
               <path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8"/>
             </svg>
           </span>
+          <!-- OPEN in the 31 Aug 2026 amendments: left exactly as it is
+               until Bill confirms what this promise means product-wise. -->
           <p class="usp__note">A vault that closes because a card lapsed is not a vault. Yours stays.</p>
         </li>
         <li class="usp" style="--i:3; --rot:7deg">
@@ -2552,7 +2513,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
               <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>
             </svg>
           </span>
-          <p class="usp__note">Name a person who can open the vault if you no longer can.</p>
+          <p class="usp__note">Nominate someone with the code, so your words reach them if you cannot.</p>
         </li>
       </ul>
 
@@ -2560,16 +2521,17 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   </div>
 </section>
 
-<!-- ================= SECTION 03 — HOW IT WORKS ================= -->
+<!-- ================= SECTION 04 — HOW IT WORKS ================= -->
 <section class="steps" id="how">
 
   <div class="steps__head">
     <h2 class="display steps__title">
       How it<br><em class="serif">works.</em>
     </h2>
+    <!-- Was a straight duplicate of step 01's copy, which is why it changed. -->
     <p class="steps__lead">
-      Small entries add up faster than a long letter you keep meaning to write.
-      Write, seal, and choose when it opens.
+      You don&#8217;t need to get it perfect. Just speak from the heart. One day,
+      they&#8217;ll thank you for it.
     </p>
   </div>
 
@@ -2594,8 +2556,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       <p class="step__num">02</p>
       <div class="step__body">
         <h3 class="display step__title">Seal it <em class="serif">in the vault</em></h3>
+        <!-- "including yours" removed as a factual correction: the account
+             holder can view their own sealed entries. -->
         <p class="step__note">
-          Sealed entries are encrypted and locked from view, including yours.
+          Sealed entries are encrypted and locked from view until you say.
           Nothing is sent, nothing is shared, nothing surfaces by accident.
         </p>
       </div>
@@ -2610,8 +2574,9 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       <div class="step__body">
         <h3 class="display step__title">Release it <em class="serif">when it is time</em></h3>
         <p class="step__note">
-          Open the vault yourself, set a date, or tie it to a birthday. They
-          receive a private link, with no app to install and no account to make.
+          When the time comes, they open a private link and step into a place
+          made just for them. Everything you kept, waiting exactly as you left
+          it. Not an app they downloaded. A place you built for them.
         </p>
       </div>
       <figure class="step__media">
@@ -2623,7 +2588,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   </ol>
 </section>
 
-<!-- ================= SECTION 04 — WHAT YOU CAN LEAVE ================= -->
+<!-- ================= SECTION 05 — WHAT YOU CAN LEAVE ================= -->
 <section class="leave theme-ink" id="what">
   <div class="leave__inner">
 
@@ -2635,10 +2600,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       <li class="leave__row">
         <div class="leave__body">
           <h3 class="leave__title">Letters, long or one line</h3>
-          <p class="leave__sub">Write freely and come back to it.</p>
+          <p class="leave__sub">Say it in small pieces, if needed.</p>
           <p class="leave__note">
-            Drafts stay private and unsealed for as long as you need them. A letter
-            can sit unfinished for years and still be there.
+            Drafts stay private and unsealed for as long as you keep them. Come
+            back to it next year, or in ten years time.
           </p>
         </div>
         <figure class="leave__art gal" data-gallery tabindex="0" role="group"
@@ -2657,10 +2622,11 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       <li class="leave__row">
         <div class="leave__body">
           <h3 class="leave__title">Your actual voice</h3>
-          <p class="leave__sub">Record straight from your phone.</p>
+          <p class="leave__sub">Record straight from your device.</p>
           <p class="leave__note">
-            Children forget how a parent sounds long before they forget what a
-            parent looked like. A two&#8209;minute message carries more than a page.
+            Your laugh, the way you say their name, the pause before you say
+            something important. None of that survives in a photograph. Leave
+            your actual voice, not just your words.
           </p>
         </div>
         <div class="vp" data-player="voice">
@@ -2735,10 +2701,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       <li class="leave__row">
         <div class="leave__body">
           <h3 class="leave__title">Video messages</h3>
-          <p class="leave__sub">For the ones that need a face.</p>
+          <p class="leave__sub">So they can see you saying it.</p>
           <p class="leave__note">
-            A birthday, a first day of school, the advice you would rather give in
-            person. Recorded once, kept at full quality.
+            A birthday, a first day of school, the advice you wish to give in
+            person. Recorded once, kept exactly as sent.
           </p>
         </div>
         <figure class="leave__art media" data-player="video">
@@ -2795,15 +2761,16 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 
       <li class="leave__row">
         <div class="leave__body">
-          <h3 class="leave__title">Photographs and papers</h3>
-          <p class="leave__sub">Family photographs, hospital bracelets, the letter your own mother wrote you.</p>
+          <h3 class="leave__title">Photographs and keepsakes</h3>
+          <p class="leave__sub">Some things say more than a letter ever could.</p>
           <p class="leave__note">
-            Add a caption so the story travels with the picture instead of dying
-            with it.
+            Upload the photographs, the certificates, the small handwritten notes
+            that never made it into an album. A short caption keeps the memory
+            attached to the image, long after you are not there to explain it.
           </p>
         </div>
         <figure class="leave__art gal" data-gallery tabindex="0" role="group"
-                aria-label="Photographs and papers, 2 images. Use the left and right arrow keys.">
+                aria-label="Photographs and keepsakes, 2 images. Use the left and right arrow keys.">
           <!-- Pexels 1989747. Pexels licence, free for commercial use. -->
           <img class="gal__img is-on" src="Images/Photographs.jpeg" alt="" width="1800" height="1125" loading="lazy">
           <!-- Standing in until a third and fourth picture exist for this row. -->
@@ -2816,13 +2783,13 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       <li class="leave__row">
         <div class="leave__body">
           <h3 class="leave__title">Release on your terms</h3>
-          <p class="leave__sub">Hold everything until you open it by hand, or schedule it.</p>
+          <p class="leave__sub">The right moment isn&#8217;t always one you can predict.</p>
           <p class="leave__note">
-            Their eighteenth birthday, next Christmas, or the day a trusted person
-            confirms you cannot open it yourself.
+            Set a date years ahead, hand it over yourself when the time feels
+            right, or trust someone close to you to know when it is needed.
           </p>
           <ul class="leave__opts">
-            <li>By hand</li>
+            <li>In person</li>
             <li>On a date</li>
             <li>By a trusted person</li>
           </ul>
@@ -2842,7 +2809,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   </div>
 </section>
 
-<!-- ================= SECTION 05 — WHY NOW ================= -->
+<!-- ================= SECTION 06 — WHY NOW ================= -->
 <section class="why" id="why">
   <div class="why__bg" aria-hidden="true"></div>
 
@@ -2854,12 +2821,12 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
     <h2 class="why__title">Distance is not the same as absence</h2>
 
     <p class="why__body">
-      Deployment, illness, a court order, a family that split badly, a diagnosis
-      that arrived early.
+      A deployment, a diagnosis, a custody arrangement that keeps you from the
+      room. A distance no one chose but everyone has to live with.
     </p>
     <p class="why__body">
-      Written was built for parents who are not in the room and still have things
-      worth saying, and for grandparents who know how short the window is.
+      Written was built for the parents still showing up, even when they cannot
+      be there, and for grandparents who know how short the window is.
     </p>
 
     <button class="why__link" type="button" data-waitlist>
@@ -2869,7 +2836,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   </div>
 </section>
 
-<!-- ================= SECTION 06 — VOICES ================= -->
+<!-- ================= SECTION 07 — TESTIMONIALS ================= -->
 <section class="voices" id="voices">
   <div class="voices__inner">
     <p class="label voices__label">From the first hundred families</p>
@@ -2881,6 +2848,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       </div>
 
       <div class="voices__main">
+        <!-- ILLUSTRATIVE, NOT VERIFIED CUSTOMER CONTENT. Written for a
+             pre-launch site and flagged as such in the 31 Aug 2026
+             amendments. Swap for real testimonials as they come in, and do
+             not let these outlive launch. -->
         <div class="voices__quotes" aria-live="polite">
           <blockquote class="voice__quote is-on"
                       data-name="Marcus" data-role="Father">
@@ -2888,17 +2859,29 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
             seven years late.
           </blockquote>
           <blockquote class="voice__quote"
-                      data-name="Anne" data-role="Grandmother">
-            My father died with all of it in his head. My grandchildren will get
-            mine in my own voice.
+                      data-name="Jessica" data-role="Mother">
+            For two years, my daughter only knew my voice through a screen that
+            froze and dropped out. So now I hold nothing back.
           </blockquote>
-          <!-- PLACEHOLDER. Unlike the two above, this quote is not from your
-               build — it was written to fill the third slot. Replace it with
-               a real one before launch. -->
           <blockquote class="voice__quote"
-                      data-name="Priya" data-role="Mother">
-            I wrote the first one at two in the morning and never sent it. It is
-            still there, waiting for the day she needs it.
+                      data-name="Elias" data-role="Father">
+            I wrote his tenth birthday letter before he turned eight. He is
+            eleven now, and has already opened three.
+          </blockquote>
+          <blockquote class="voice__quote"
+                      data-name="Tom" data-role="Father">
+            It is the only time in his life my son will hear me say I was
+            scared, and that I loved him anyway.
+          </blockquote>
+          <blockquote class="voice__quote"
+                      data-name="Freya" data-role="Mother">
+            I am not writing to convince her of anything. I am writing so there
+            is no doubt left about how much I loved her, the whole time.
+          </blockquote>
+          <blockquote class="voice__quote"
+                      data-name="Vanessa" data-role="Stepmother">
+            I was the one who packed his lunches for nine years. He should hear
+            that from me instead of about me.
           </blockquote>
         </div>
 
@@ -2906,11 +2889,17 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
              arrows are gone. -->
         <div class="voices__ticks" role="group" aria-label="Choose a quote">
           <button class="voices__tick is-on" type="button" data-voice-go="0"
-                  aria-label="Quote 1 of 3"></button>
+                  aria-label="Quote 1 of 6"></button>
           <button class="voices__tick" type="button" data-voice-go="1"
-                  aria-label="Quote 2 of 3"></button>
+                  aria-label="Quote 2 of 6"></button>
           <button class="voices__tick" type="button" data-voice-go="2"
-                  aria-label="Quote 3 of 3"></button>
+                  aria-label="Quote 3 of 6"></button>
+          <button class="voices__tick" type="button" data-voice-go="3"
+                  aria-label="Quote 4 of 6"></button>
+          <button class="voices__tick" type="button" data-voice-go="4"
+                  aria-label="Quote 5 of 6"></button>
+          <button class="voices__tick" type="button" data-voice-go="5"
+                  aria-label="Quote 6 of 6"></button>
         </div>
       </div>
     </div>
@@ -2920,7 +2909,7 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
        in "What you can leave" use the same one. -->
 </section>
 
-<!-- ================= SECTION 07 — PRICING ================= -->
+<!-- ================= SECTION 08 — PRICING ================= -->
 <section class="pricing" id="pricing">
   <div class="pricing__inner">
 
@@ -4292,10 +4281,9 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
      three tiers, which should step across the row. */
   const BLOCKS = [
     '.hero__content',
-    // Matches all eight epigraph figures, seven of which are hidden. An
-    // observer on a hidden element simply never fires, so the seven cost
-    // nothing and the one on show still arrives quote first, rule second.
-    '.epi__card',
+    // Matches all four quotes, three of them hidden. An observer on a
+    // hidden element never fires, so the three cost nothing.
+    '.epi__inner',
     '.feat__side',
     '.steps__head',
     '.leave__body',
