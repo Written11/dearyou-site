@@ -3612,20 +3612,27 @@ html.intro-hold [data-words] .w{
       setTimeout(() => { hint.hidden = true; }, 500);
     };
     /* Shown a moment after the nav has settled, then wired to leave on the
-       next interaction or after a few seconds. Arming the dismiss here rather
-       than at load means an early scroll can never suppress it before it has
-       appeared. */
-    setTimeout(() => {
-      // Not while the founder card is up — it owns the first load, and the
-      // hint would sit behind its backdrop. It shows on the next load.
-      const fn = document.getElementById('founder-note');
-      if (fn && fn.open) return;
+       next interaction or after a few seconds. Arming the dismiss inside show
+       rather than at load means an early scroll can never suppress it before
+       it has appeared. */
+    const show = () => {
       place();
       hint.hidden = false;
       requestAnimationFrame(() => hint.setAttribute('data-show', ''));
       addEventListener('resize', place);
       hideT = setTimeout(dismissHint, 6000);
       GESTURES.forEach(ev => addEventListener(ev, dismissHint, { once: true, capture: true }));
+    };
+    setTimeout(() => {
+      // The founder card owns the first load, and the hint would sit behind
+      // its backdrop. When it is up, wait for it to close and the nav to
+      // settle again, then show. Otherwise (already seen) show now.
+      const fn = document.getElementById('founder-note');
+      if (fn && fn.open) {
+        fn.addEventListener('close', () => setTimeout(show, 1400), { once: true });
+        return;
+      }
+      show();
     }, 1400);
   }
 
