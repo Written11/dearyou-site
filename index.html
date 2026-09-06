@@ -430,6 +430,13 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
    text and the curly pair can never come out straight. */
 .epi__quote::before{content:'\201C';}
 .epi__quote::after{content:'\201D';}
+/* On a phone the quote otherwise runs the full width and the shorter lines
+   collapse to two, which reads thin. Cap the measure so even the shortest
+   quote wraps to at least three lines and the block keeps its weight. Held
+   to phones only; tablets and up keep the full measure. */
+@media (max-width:36rem){
+  .epi__quote{max-width:20rem;}
+}
 
 /* =====================================================================
    SECTION 03 — Vault intro
@@ -438,8 +445,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
    ===================================================================== */
 .feat{
   position:relative;
-  /* One viewport to pin, plus a scroll beat per card. */
-  height:calc(100svh + (var(--cards) * 62svh));
+  /* One viewport to pin, plus a scroll beat per card. The beat sets the
+     pace: the taller it is, the more scrolling each card takes to rise, so
+     they settle in slower. */
+  height:calc(100svh + (var(--cards) * 90svh));
   background:var(--swatch-paper);
 }
 .feat__rail{
@@ -1067,18 +1076,20 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   --vp-rest:color-mix(in srgb, var(--swatch-clay) 45%, transparent);
   --vp-line:color-mix(in srgb, var(--swatch-clay) 34%, transparent);
 
-  display:grid; gap:var(--space-4);
-  /* The padding belongs to BOTH states, not to the flat-red one. When it
-     arrived with the background, a track without artwork was 56px taller
-     than one with it, and the whole row jumped as you stepped between
-     them. Only the background changes now.
-
-     The width carries that padding on top, so what sits inside it is
-     exactly the width of every other frame in this section. */
-  padding:var(--space-6) var(--space-5) var(--space-5);
-  width:calc(min(52svh, 26rem) * 2 / 3 + var(--space-5) * 2);
-  max-width:100%;
+  /* The same box as every other frame in this section: 2:3 at the same
+     height, so the width comes out identical too. The cover fills the space
+     above the deck rather than being a fixed square with the deck stacked
+     under it, which is what had made the player taller and wider than the
+     frames beside it. Height-driven to match .leave__art, not width-driven.
+     The padding lives inside the fixed box (border-box), so both states
+     still measure identically. */
+  display:grid; grid-template-rows:1fr auto; gap:var(--space-4);
+  aspect-ratio:2 / 3;
+  height:min(52svh, 26rem);
+  width:auto; max-width:100%;
   justify-self:center;
+  padding:var(--space-5);
+  overflow:hidden;
 }
 
 /* --- Cover, two states ------------------------------------------------
@@ -1088,8 +1099,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
    cover area and deck together — so it reads as one field rather than a
    coloured box sitting on top of a second container. */
 .vp__cover{
-  aspect-ratio:1 / 1;
-  height:auto; width:100%;
+  /* Fills the row above the deck instead of forcing a square, so the whole
+     player holds the frame's 2:3 box. */
+  aspect-ratio:auto;
+  width:100%; height:100%; min-height:0;
 }
 .vp[data-flush="true"]{
   background:var(--swatch-red-500);
@@ -1481,8 +1494,59 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   }
 }
 
-.voices__side{display:flex; flex-direction:column; gap:var(--space-1);}
+.voices__side{display:flex; flex-direction:column; gap:2px; align-self:start;}
 .voices__main{display:flex; flex-direction:column; gap:clamp(2rem, 1rem + 3vw, 3.5rem);}
+/* Each name is a button in a plain column. Hierarchy alone marks the active
+   one: the chosen name sits at full size in the wine ink while the rest are
+   smaller and quieter, and its role appears beneath it. No rule or marker. */
+.voice__pick{
+  display:flex; flex-direction:column; gap:2px;
+  margin:0; padding:0.3rem 0;
+  border:0; background:none;
+  text-align:left; cursor:pointer; font-family:var(--font-sans);
+}
+.voice__pickName{
+  font-size:var(--size-small); font-weight:var(--weight-regular); line-height:1.2;
+  color:var(--swatch-stone-600);
+  transform-origin:left center;
+  transition:font-size var(--duration-fast) var(--ease),
+             color var(--duration-fast) var(--ease),
+             transform var(--duration-fast) var(--ease);
+}
+/* The role, under the active name in the same wine ink. Smaller than the
+   name and set apart by the selected item's own spacing, so it reads as that
+   name's descriptor rather than another entry in the list. */
+.voice__pickRole{
+  display:none;
+  font-size:var(--size-small);
+  color:var(--swatch-wine-900); margin-top:1px;
+}
+/* The selected name grows for real (it also carries the role and the
+   spacing). */
+.voice__pick.is-on .voice__pickName{
+  font-size:var(--size-body-l); font-weight:var(--weight-medium);
+  color:var(--swatch-wine-900);
+}
+/* Hover previews that size and colour, but with a transform so the growth is
+   purely visual and never reflows the list — the other names stay put. Not on
+   the active one, which is already at full size. The 1.3 is the ratio of the
+   full name size to the small one. */
+.voice__pick:not(.is-on):hover .voice__pickName{
+  transform:scale(1.3);
+  font-weight:var(--weight-medium);
+  color:var(--swatch-wine-900);
+}
+/* The selected name sits apart from the smaller ones above and below it, and
+   shows its relation. Hovering only previews the size and colour (see the
+   name rule above), not the relation or the spacing. */
+.voice__pick.is-on{margin-block:0.6rem;}
+.voice__pick.is-on .voice__pickRole{display:block;}
+
+/* --- Mobile switcher --------------------------------------------------
+   The single active name and role, and the tick switcher, as the section
+   was before the desktop name list. Shown below 64rem; the name list takes
+   over at and above it. */
+.voices__now{display:flex; flex-direction:column; gap:var(--space-1);}
 .voice__name{
   margin:0; font-family:var(--font-sans); font-weight:var(--weight-medium);
   font-size:var(--size-body-l); color:var(--swatch-wine-900);
@@ -1490,27 +1554,37 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 .voice__role{
   margin:0; font-size:var(--size-body); color:var(--swatch-stone-600);
 }
-/* Short rules under the quote — enough to say "there is more than one".
-   Identical mechanism to the section 02 ticks, so the two carousels on the
-   page read as one control and not two.
+.voices__nav{display:flex; gap:var(--space-2);}
+.voices__arrow{
+  display:grid; place-items:center;
+  width:2.75rem; height:2.75rem;
+  border:1px solid var(--swatch-stone-400); border-radius:var(--radius-xs);
+  background:none; color:var(--swatch-wine-900); cursor:pointer;
+  transition:background-color var(--duration-fast) var(--ease),
+             border-color var(--duration-fast) var(--ease);
+}
+.voices__arrow:hover{
+  background:color-mix(in srgb, var(--swatch-wine-900) 6%, transparent);
+  border-color:var(--swatch-stone-600);
+}
+.voices__arrow svg{width:1.1rem; height:1.1rem; display:block;}
 
-   The rule is drawn on ::after and the button padded out around it. As a
-   bare 2px-tall element the button was a real rule and an impossible touch
-   target; now the hit area is 24px and the mark stays 2px. */
-.voices__ticks{display:flex; gap:var(--space-2);}
-.voices__tick{
-  width:2.5rem; padding:0.6875rem 0; border:0; background:none; cursor:pointer;
-  display:flex; align-items:center;
-  transition:width var(--duration-fast) var(--ease);
+/* The name list is desktop-only; the single name and buttons are mobile-only. */
+@media (min-width:64rem){
+  .voices__now, .voices__nav{display:none;}
 }
-.voices__tick::after{
-  content:''; display:block; width:100%; height:2px;
-  background:var(--swatch-sand);
-  transition:background-color var(--duration-fast) var(--ease);
+@media (max-width:63.999rem){
+  .voices__side{display:none;}
+  /* Centre the section on a phone: label, name, quote and buttons all on the
+     one axis. The quote drops its hanging indent so the first line centres
+     cleanly rather than sitting a mark's width to the left. */
+  .voices__label{text-align:center;}
+  .voices__main{align-items:center; text-align:center;}
+  .voices__now{align-items:center;}
+  .voices__quotes{justify-items:center;}
+  .voices__quotes .voice__quote{text-align:center; text-indent:0;}
+  .voices__nav{justify-content:center;}
 }
-.voices__tick:hover::after{background:var(--swatch-stone-400);}
-.voices__tick.is-on{width:3.5rem;}
-.voices__tick.is-on::after{background:var(--swatch-red-500);}
 
 .voices__quotes{position:relative; display:grid;}
 .voice__quote{
@@ -1520,10 +1594,23 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   font-size:clamp(1.75rem, 1.1rem + 2.6vw, 3.5rem);
   line-height:1.18; color:var(--swatch-wine-900);
   text-indent:-0.55em;              /* hang the opening mark */
-  opacity:0; visibility:hidden;
-  transition:opacity var(--duration-fast) var(--ease);
+  /* Blur cross-fade between voices, echoing the epigraph's blur reveal. The
+     outgoing line softens and fades quickly; visibility is held through the
+     fade (delayed to the end) so the exit is actually seen, then flips to
+     hidden so gone quotes leave the tab order and screen reader alone. */
+  opacity:0; visibility:hidden; filter:blur(8px);
+  transition:opacity 0.35s var(--ease),
+             filter 0.35s var(--ease),
+             visibility 0s linear 0.35s;
 }
-.voice__quote.is-on{opacity:1; visibility:visible;}
+/* The incoming line resolves from the blur into focus, a touch slower than
+   the exit so the two never muddle. */
+.voice__quote.is-on{
+  opacity:1; visibility:visible; filter:blur(0);
+  transition:opacity 0.6s var(--ease),
+             filter 0.6s var(--ease),
+             visibility 0s;
+}
 .voice__quote::before{content:'\201C';}
 .voice__quote::after{content:'\201D';}
 
@@ -1557,10 +1644,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 .dragcur[data-dir="next"] .i-prev{display:none;}
 .dragcur[data-dir="prev"] .i-next{display:none;}
 @media (pointer:fine){
-  .voices__stage,
+  /* Only the galleries hide the real cursor, for their drag pill. The
+     testimonials switch by clicking names now, not by dragging the quote,
+     so their stage keeps the ordinary cursor. */
   .gal{cursor:none;}
-  /* The ticks keep a real cursor — they are ordinary buttons. */
-  .voices__tick{cursor:pointer;}
 }
 
 /* --- Image galleries ---------------------------------------------------
@@ -1657,6 +1744,32 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 @media (min-width:64rem){
   .pricing__grid{grid-template-columns:repeat(3, 1fr);}
+}
+
+/* On reveal, the two side tiers start stacked behind the centre one and slide
+   out to their places as the section comes into view, the centre arriving
+   first and in front. Only in the three-column layout (there is no "behind
+   the centre" when they are stacked) and only with motion allowed; on a
+   phone or under reduced motion the tiers keep the section's plain reveal.
+   The transform is declared once and driven by per-card --tx/--sc, so the
+   shared .is-in can clear it with a single transform:none. */
+@media (prefers-reduced-motion: no-preference) and (min-width:64rem){
+  .pricing__grid .tier{position:relative;}
+  .pricing__grid .tier[data-reveal]{
+    opacity:0;
+    transform:translateX(var(--tx, 0)) scale(var(--sc, 0.92));
+    transition:opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  }
+  .pricing__grid .tier[data-reveal].is-in{
+    opacity:1;
+    transform:none;
+  }
+  /* Left and right slide in from over the centre (one column plus the gap);
+     they sit behind it and follow a beat later. */
+  .pricing__grid .tier:nth-child(1){--tx:calc(100% + var(--grid-gap)); z-index:1; transition-delay:0.18s;}
+  .pricing__grid .tier:nth-child(3){--tx:calc(-100% - var(--grid-gap)); z-index:1; transition-delay:0.18s;}
+  /* Centre: in front, barely scaled, arrives first. */
+  .pricing__grid .tier:nth-child(2){--tx:0; --sc:0.96; z-index:2; transition-delay:0s;}
 }
 
 .tier{
@@ -1954,6 +2067,83 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   border-top:1px solid color-mix(in srgb, var(--swatch-clay) 28%, transparent);
 }
 
+/* --- Founder note (first-visit card) ----------------------------------
+   A note from our founder, shown once over the page on load. Copy is lifted
+   from the vault app's founder screen; set on paper in the display serif, the
+   way a letter would be, rather than as app chrome. */
+.fnote{
+  border:0; padding:0; background:none;
+  max-width:min(32rem, calc(100vw - 2rem)); width:100%;
+  color:var(--swatch-ink);
+}
+.fnote::backdrop{
+  background:color-mix(in srgb, var(--swatch-ink) 80%, transparent);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+.fnote__panel{
+  position:relative;
+  padding:clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+  background:var(--swatch-paper);
+  border-radius:var(--radius-sm);
+  display:flex; flex-direction:column; gap:var(--space-4);
+  text-align:left;
+}
+.fnote[open]{animation:dlIn 0.4s var(--ease);}
+@media (prefers-reduced-motion:reduce){ .fnote[open]{animation:none;} }
+.fnote__x{
+  position:absolute; top:0.75rem; right:0.75rem;
+  display:grid; place-items:center; width:2rem; height:2rem;
+  background:none; border:1px solid var(--swatch-sand);
+  border-radius:var(--radius-xs); color:var(--swatch-stone-600); cursor:pointer;
+  transition:color var(--duration-fast) var(--ease),
+             border-color var(--duration-fast) var(--ease);
+}
+.fnote__x:hover{color:var(--swatch-wine-900); border-color:var(--swatch-stone-400);}
+.fnote__x svg{width:0.6875rem; height:0.6875rem;}
+.fnote__kicker{
+  margin:0; font-size:var(--size-label); letter-spacing:var(--tracking-label);
+  text-transform:uppercase; font-weight:var(--weight-medium);
+  color:var(--swatch-red-700);
+}
+.fnote__greeting{
+  margin:0; font-family:var(--font-display); font-weight:var(--weight-regular);
+  font-size:clamp(1.5rem, 1.2rem + 1.5vw, 2rem); line-height:1.2;
+  color:var(--swatch-wine-900);
+}
+.fnote__body{
+  margin:0; max-width:42ch;
+  font-family:var(--font-display); font-weight:var(--weight-regular);
+  font-size:clamp(1.0625rem, 1rem + 0.4vw, 1.25rem); line-height:1.5;
+  color:color-mix(in srgb, var(--swatch-ink) 86%, transparent);
+}
+.fnote__sign{
+  margin:var(--space-2) 0 0;
+  font-family:var(--font-display); font-weight:var(--weight-regular);
+  font-size:clamp(1.0625rem, 1rem + 0.4vw, 1.25rem); line-height:1.6;
+  color:color-mix(in srgb, var(--swatch-ink) 86%, transparent);
+}
+.fnote__name{color:var(--swatch-wine-900);}
+
+/* While the founder card holds the first screen, the page's entrance
+   animations wait behind it. Removing .intro-hold (when the card closes, or
+   at once when there is no card to show) lets the whole sequence play. */
+html.intro-hold .nav__cell--logo,
+html.intro-hold .nav__cell--sound,
+html.intro-hold .nav__cell--mail,
+html.intro-hold .nav__link,
+html.intro-hold .nav__toggle,
+html.intro-hold .nav__cta,
+html.intro-hold .hero__caption,
+html.intro-hold .hero__scroll{animation-play-state:paused;}
+html.intro-hold .hero__content [data-reveal]{
+  transition:none !important;
+  opacity:0; transform:translateY(1.5rem);
+}
+html.intro-hold [data-words] .w{
+  transition:none !important;
+  opacity:0; transform:translateY(0.7em);
+}
+
 /* --- Download dialog --------------------------------------------------- */
 .dl{
   border:0; padding:0; background:none;
@@ -2074,6 +2264,22 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
     transition-delay:calc(var(--d, 0) * 130ms);
   }
   [data-reveal].is-in{opacity:1; transform:none;}
+
+  /* The epigraph resolves out of a soft blur rather than lifting like the
+     other blocks: the quote comes into focus as it comes into view, which
+     suits a single line settling into the reader's attention. The blur
+     carries the movement, so the shared translate is dropped, filter is
+     added to the transition, and it runs a touch slower than a normal block
+     so the pull into focus is actually felt. The stagger delay is zeroed
+     because only one of the four quotes is ever shown and its child index
+     (and so its delay) would otherwise vary from load to load. */
+  .epi__quote[data-reveal]{
+    transform:none;
+    filter:blur(12px);
+    transition:opacity 1.3s var(--ease), filter 1.3s var(--ease);
+    transition-delay:0s;
+  }
+  .epi__quote[data-reveal].is-in{filter:blur(0);}
 
   /* Hero on-load cascade. The hero is in view the moment the page loads, so
      the observer flips it to .is-in at once; these explicit delays then bring
@@ -2241,6 +2447,17 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   .hero__actions .ctl{flex:1 1 100%; justify-content:space-between;}
 }
 </style>
+<script>
+  /* Set before the body paints: if the founder card is going to show (first
+     visit), hold the page's entrance animations until it closes. Removed here
+     immediately when there is no card to show, so returning visitors get the
+     sequence on load as usual. */
+  try {
+    if (localStorage.getItem('dearyou.founder') !== 'seen') {
+      document.documentElement.classList.add('intro-hold');
+    }
+  } catch (e) {}
+</script>
 </head>
 
 <body>
@@ -2858,9 +3075,28 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
     <p class="label voices__label">From the first hundred families</p>
 
     <div class="voices__stage" data-voices>
-      <div class="voices__side">
-        <p class="voice__name" data-voice-name>Marcus</p>
-        <p class="voice__role" data-voice-role>Father</p>
+      <!-- The names, one below the other. Clicking one shows that family's
+           line on the right; the role appears under the chosen name. This is
+           the switcher now, so the ticks at the foot are gone. -->
+      <div class="voices__side" role="group" aria-label="Choose a family">
+        <button class="voice__pick is-on" type="button" data-voice-go="0" aria-pressed="true">
+          <span class="voice__pickName">Marcus</span><span class="voice__pickRole">Father</span>
+        </button>
+        <button class="voice__pick" type="button" data-voice-go="1" aria-pressed="false">
+          <span class="voice__pickName">Jessica</span><span class="voice__pickRole">Mother</span>
+        </button>
+        <button class="voice__pick" type="button" data-voice-go="2" aria-pressed="false">
+          <span class="voice__pickName">Elias</span><span class="voice__pickRole">Father</span>
+        </button>
+        <button class="voice__pick" type="button" data-voice-go="3" aria-pressed="false">
+          <span class="voice__pickName">Tom</span><span class="voice__pickRole">Father</span>
+        </button>
+        <button class="voice__pick" type="button" data-voice-go="4" aria-pressed="false">
+          <span class="voice__pickName">Freya</span><span class="voice__pickRole">Mother</span>
+        </button>
+        <button class="voice__pick" type="button" data-voice-go="5" aria-pressed="false">
+          <span class="voice__pickName">Vanessa</span><span class="voice__pickRole">Stepmother</span>
+        </button>
       </div>
 
       <div class="voices__main">
@@ -2868,6 +3104,12 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
              pre-launch site and flagged as such in the 31 Aug 2026
              amendments. Swap for real testimonials as they come in, and do
              not let these outlive launch. -->
+        <!-- Mobile only: the single active name and role, above the quote, as
+             this section was before the desktop name list. -->
+        <div class="voices__now" aria-hidden="true">
+          <p class="voice__name" data-voice-name>Marcus</p>
+          <p class="voice__role" data-voice-role>Father</p>
+        </div>
         <div class="voices__quotes" aria-live="polite">
           <blockquote class="voice__quote is-on"
                       data-name="Marcus" data-role="Father">
@@ -2901,22 +3143,19 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
           </blockquote>
         </div>
 
-        <!-- Doubles as the only keyboard route through the quotes, now the
-             arrows are gone. -->
-        <div class="voices__ticks" role="group" aria-label="Choose a quote">
-          <button class="voices__tick is-on" type="button" data-voice-go="0"
-                  aria-label="Quote 1 of 6"></button>
-          <button class="voices__tick" type="button" data-voice-go="1"
-                  aria-label="Quote 2 of 6"></button>
-          <button class="voices__tick" type="button" data-voice-go="2"
-                  aria-label="Quote 3 of 6"></button>
-          <button class="voices__tick" type="button" data-voice-go="3"
-                  aria-label="Quote 4 of 6"></button>
-          <button class="voices__tick" type="button" data-voice-go="4"
-                  aria-label="Quote 5 of 6"></button>
-          <button class="voices__tick" type="button" data-voice-go="5"
-                  aria-label="Quote 6 of 6"></button>
+        <!-- Mobile only: previous / next buttons, hidden on desktop where the
+             name list does the switching. -->
+        <div class="voices__nav" role="group" aria-label="Move between quotes">
+          <button class="voices__arrow" type="button" data-voice-prev aria-label="Previous">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <button class="voices__arrow" type="button" data-voice-next aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
         </div>
+
       </div>
     </div>
   </div>
@@ -3096,6 +3335,34 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
      can be switched back on at launch: point the store URLs at the real
      listings and put data-download="ios" / "android" back on a button. -->
 <!-- ================= DOWNLOAD DIALOG ================= -->
+<!-- First-visit card: a note from our founder, shown once over the page on
+     load. Copy taken from the vault app's founder screen. -->
+<dialog class="fnote" id="founder-note" aria-labelledby="fnote-kicker">
+  <div class="fnote__panel">
+    <button class="fnote__x" type="button" data-fnote-close aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+      </svg>
+    </button>
+    <p class="fnote__kicker" id="fnote-kicker">A note from our founder</p>
+    <p class="fnote__greeting">Dear <span class="serif">you,</span></p>
+    <p class="fnote__body">
+      You are not alone in this journey. I understand the struggle. I have
+      lived it.
+    </p>
+    <p class="fnote__body">
+      DearYou is your safe place. Somewhere to leave a piece of yourself for
+      them, so they know, without question, that they were always in your
+      heart.
+    </p>
+    <p class="fnote__sign">
+      With you in this,<br>
+      <span class="fnote__name">Vas Kara</span><br>
+      Founder, DearYou
+    </p>
+  </div>
+</dialog>
+
 <dialog class="dl" id="download-dialog" aria-labelledby="dl-title">
   <div class="dl__panel theme-ink">
 
@@ -3349,6 +3616,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
        than at load means an early scroll can never suppress it before it has
        appeared. */
     setTimeout(() => {
+      // Not while the founder card is up — it owns the first load, and the
+      // hint would sit behind its backdrop. It shows on the next load.
+      const fn = document.getElementById('founder-note');
+      if (fn && fn.open) return;
       place();
       hint.hidden = false;
       requestAnimationFrame(() => hint.setAttribute('data-show', ''));
@@ -4372,6 +4643,12 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
      added without the data-reveal attribute and animates off .is-in alone. */
   document.querySelectorAll('[data-rule]').forEach(el => marked.push(el));
 
+  /* The pricing tiers reveal once and stay. The side cards spread out from
+     behind the centre on the first pass; replaying that each time the
+     section returns to view would undo the effect, so they opt out of the
+     shared in-and-out behaviour. */
+  document.querySelectorAll('.pricing__grid .tier').forEach(el => el.setAttribute('data-reveal-once', ''));
+
   if (!marked.length) return;
 
   if (!('IntersectionObserver' in window)) {
@@ -4390,10 +4667,19 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 
   const io = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-      // Set the direction on the way in AND on the way out, so the exit
-      // retreats the way it came and the next entry starts from there.
-      entry.target.style.setProperty('--from', from);
-      entry.target.classList.toggle('is-in', entry.isIntersecting);
+      const el = entry.target;
+      if (entry.isIntersecting) {
+        // Set the direction on the way in AND on the way out, so the exit
+        // retreats the way it came and the next entry starts from there.
+        el.style.setProperty('--from', from);
+        el.classList.add('is-in');
+        // A one-way element settles on its first reveal and is then left
+        // alone, so it never re-hides and replays on the way back.
+        if (el.hasAttribute('data-reveal-once')) io.unobserve(el);
+      } else if (!el.hasAttribute('data-reveal-once')) {
+        el.style.setProperty('--from', from);
+        el.classList.remove('is-in');
+      }
     });
   }, {threshold: 0.12, rootMargin: '0px 0px -6% 0px'});
 
@@ -4553,36 +4839,40 @@ window.DearYou = window.DearYou || {};
    --------------------------------------------------------------------- */
 (() => {
   const stage = document.querySelector('[data-voices]');
-  const cur   = document.querySelector('[data-dragcur]');
   if (!stage) return;
 
   const quotes = [...stage.querySelectorAll('.voice__quote')];
-  const ticks  = [...stage.querySelectorAll('[data-voice-go]')];
-  const nameEl = stage.querySelector('[data-voice-name]');
+  const picks  = [...stage.querySelectorAll('.voice__pick')];   // desktop name list
+  const nameEl = stage.querySelector('[data-voice-name]');      // mobile single name
   const roleEl = stage.querySelector('[data-voice-role]');
+  const prevBtn = stage.querySelector('[data-voice-prev]');     // mobile buttons
+  const nextBtn = stage.querySelector('[data-voice-next]');
   let i = 0;
 
   const show = n => {
     i = (n + quotes.length) % quotes.length;
     quotes.forEach((q, k) => q.classList.toggle('is-on', k === i));
-    ticks.forEach((t, k) => {
-      t.classList.toggle('is-on', k === i);
-      t.setAttribute('aria-current', k === i ? 'true' : 'false');
+    picks.forEach((p, k) => {
+      p.classList.toggle('is-on', k === i);
+      p.setAttribute('aria-pressed', k === i ? 'true' : 'false');
     });
-    nameEl.textContent = quotes[i].dataset.name;
-    roleEl.textContent = quotes[i].dataset.role;
+    // The mobile single-name display tracks the same selection.
+    if (nameEl) nameEl.textContent = quotes[i].dataset.name;
+    if (roleEl) roleEl.textContent = quotes[i].dataset.role;
   };
 
-  ticks.forEach(t => t.addEventListener('click', () => show(+t.dataset.voiceGo)));
+  // Desktop: click a name. Mobile: step with the previous / next buttons.
+  // Both wrap around, so there is no dead end at either end.
+  picks.forEach(p => p.addEventListener('click', () => show(+p.dataset.voiceGo)));
+  if (prevBtn) prevBtn.addEventListener('click', () => show(i - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => show(i + 1));
 
+  // Arrow keys step through the names when the list has focus, and move the
+  // focus with the selection so the reader can keep going from the keyboard.
   stage.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft')  { show(i - 1); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { show(i + 1); e.preventDefault(); }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { show(i + 1); if (picks[i]) picks[i].focus(); e.preventDefault(); }
+    if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  { show(i - 1); if (picks[i]) picks[i].focus(); e.preventDefault(); }
   });
-
-  // Left half goes back, right half goes forward, and the pill says which.
-  // Same behaviour the image galleries use — see clickThrough.
-  DearYou.clickThrough(stage, d => show(i + d), e => !!e.target.closest('[data-voice-go]'));
 
   show(0);
 })();
@@ -4796,6 +5086,36 @@ window.DearYou = window.DearYou || {};
 
   opts.forEach(o => o.addEventListener('click', () => apply(o.dataset.billing)));
   apply('yearly');
+})();
+
+/* ---------------------------------------------------------------------
+   Founder note. Shown once, as a card over the page on the first visit.
+   Remembered so it does not return on later loads; dismissed by the button,
+   the close control, Esc (native to <dialog>) or a click on the backdrop.
+   --------------------------------------------------------------------- */
+(() => {
+  const html = document.documentElement;
+  // Releasing the hold is what starts the whole entrance sequence.
+  const release = () => html.classList.remove('intro-hold');
+
+  const dlg = document.getElementById('founder-note');
+  const KEY = 'dearyou.founder';
+  let seen; try { seen = localStorage.getItem(KEY) === 'seen'; } catch { seen = true; }
+
+  // Nothing to show (already seen, or no <dialog> support): let the sequence
+  // run now so the page is never left held.
+  if (seen || !dlg || !dlg.showModal) { release(); return; }
+
+  const remember = () => { try { localStorage.setItem(KEY, 'seen'); } catch {} };
+  dlg.querySelectorAll('[data-fnote-close]').forEach(b => b.addEventListener('click', () => dlg.close()));
+  // Click on the backdrop (outside the panel) closes it.
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  // On close, however it happened (the cross, Esc, or the backdrop): remember
+  // it, then release the hold so the sequence plays.
+  dlg.addEventListener('close', () => { remember(); release(); });
+
+  // After the first paint, so the page is already behind it when it opens.
+  requestAnimationFrame(() => { try { dlg.showModal(); } catch (e) { release(); } });
 })();
 
 /* ---------------------------------------------------------------------
