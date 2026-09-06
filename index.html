@@ -1925,48 +1925,34 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 /* =====================================================================
    FIRST-VISIT PROMPTS
    ===================================================================== */
-.prompt{
-  position:fixed; left:var(--space-4); bottom:var(--space-4); z-index:65;
-  width:min(24rem, calc(100vw - 2rem));
-  display:flex; flex-direction:column; gap:var(--space-2);
-}
-.prompt[hidden]{display:none;}
-.prompt__card{
-  padding:var(--space-4);
-  border:1px solid color-mix(in srgb, var(--swatch-clay) 26%, transparent);
-  border-radius:var(--radius-sm);
+/* A small note under the sound icon, in place of the old first-visit card.
+   Sound is on by default; this says so quietly and then leaves. It lives in
+   the fixed nav layer (the bar itself clips its overflow), is positioned
+   under the sound cell by script, and never takes a pointer event. */
+.soundhint{
+  position:fixed; z-index:49;
+  max-width:15rem;
+  margin:0; padding:0.45rem 0.7rem;
+  border:1px solid color-mix(in srgb, var(--swatch-clay) 28%, transparent);
+  border-radius:var(--radius-xs);
   background:color-mix(in srgb, var(--swatch-ink) 92%, transparent);
   -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-  color:var(--swatch-paper);
-  display:flex; flex-direction:column; gap:var(--space-4);
-  animation:promptIn 0.3s var(--ease);
-}
-.prompt__card[hidden]{display:none;}
-@keyframes promptIn{from{opacity:0; translate:0 8px;} to{opacity:1; translate:0 0;}}
-@media (prefers-reduced-motion:reduce){ .prompt__card{animation:none;} }
-
-.prompt__text{
-  margin:0; font-size:var(--size-small); line-height:1.55;
   color:var(--swatch-clay);
+  font-size:var(--size-small); line-height:1.4;
+  pointer-events:none;
+  opacity:0; transform:translateY(-0.35rem);
+  transition:opacity 0.5s var(--ease), transform 0.5s var(--ease);
 }
-.prompt__acts{display:flex; flex-wrap:wrap; gap:var(--space-2);}
-.prompt__btn{
-  height:var(--control-h); padding-inline:var(--control-pad);
-  border:1px solid color-mix(in srgb, var(--swatch-clay) 34%, transparent);
-  border-radius:var(--radius-xs);
-  background:transparent; color:var(--swatch-paper); cursor:pointer;
-  font-family:inherit; font-size:var(--size-control);
-  letter-spacing:var(--tracking-label); text-transform:uppercase;
-  font-weight:var(--weight-medium);
-  transition:background-color var(--duration-fast) var(--ease),
-             border-color var(--duration-fast) var(--ease),
-             color var(--duration-fast) var(--ease);
+.soundhint[hidden]{display:none;}
+.soundhint[data-show]{opacity:1; transform:none;}
+/* A small caret pointing up at the icon above. */
+.soundhint::before{
+  content:''; position:absolute; top:-5px; left:1rem;
+  width:9px; height:9px; rotate:45deg;
+  background:color-mix(in srgb, var(--swatch-ink) 92%, transparent);
+  border-left:1px solid color-mix(in srgb, var(--swatch-clay) 28%, transparent);
+  border-top:1px solid color-mix(in srgb, var(--swatch-clay) 28%, transparent);
 }
-.prompt__btn:hover{background:color-mix(in srgb, var(--swatch-paper) 10%, transparent);}
-.prompt__btn--yes{
-  background:var(--swatch-red-500); border-color:var(--swatch-red-500);
-}
-.prompt__btn--yes:hover{background:var(--swatch-red-700); border-color:var(--swatch-red-700);}
 
 /* --- Download dialog --------------------------------------------------- */
 .dl{
@@ -2084,10 +2070,57 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   [data-reveal]{
     opacity:0;
     transform:translateY(calc(var(--from, 1) * 1.5rem));
-    transition:opacity 0.7s var(--ease), transform 0.7s var(--ease);
-    transition-delay:calc(var(--d, 0) * 90ms);
+    transition:opacity 1.1s var(--ease), transform 1.1s var(--ease);
+    transition-delay:calc(var(--d, 0) * 130ms);
   }
   [data-reveal].is-in{opacity:1; transform:none;}
+
+  /* Hero on-load cascade. The hero is in view the moment the page loads, so
+     the observer flips it to .is-in at once; these explicit delays then bring
+     its elements in one after another as a single calm sequence, overriding
+     the generic --d stagger for the hero alone. The order reads top to
+     bottom: eyebrow, then the headline assembles word by word (0.55s base
+     above), then the lead, the button, the caption, and last the scroll cue
+     inviting the first move down. */
+  .hero__eyebrow[data-reveal]{transition-delay:0.2s;}
+  .hero__lead[data-reveal]{transition-delay:1.3s;}
+  .hero__actions[data-reveal]{transition-delay:1.65s;}
+
+  /* The caption and scroll cue close the sequence. They sit at the very foot
+     of the hero, inside the scroll observer's bottom blind spot, so the
+     observer never fires them on load. This is an on-load entrance, not a
+     scroll reveal, so they run a plain keyframe instead, on the same rise as
+     everything else, timed to arrive after the button. `both` holds them
+     hidden until their delay and keeps them settled after. */
+  @keyframes hero-rise{
+    from{opacity:0; transform:translateY(1.5rem);}
+    to{opacity:1; transform:none;}
+  }
+  .hero__caption{opacity:0; animation:hero-rise 1.1s var(--ease) 1.95s both;}
+  .hero__scroll{opacity:0; animation:hero-rise 1.1s var(--ease) 2.2s both;}
+
+  /* The menu bar runs its OWN quick sequence, on purpose kept separate from
+     the hero cascade above so it never stretches the hero's timeline. It
+     starts at once and steps left to right, each cell dropping in from just
+     above the bar, and the whole thing is done before the headline has
+     finished writing itself. Short duration, tight stagger. */
+  @keyframes nav-in{from{opacity:0; transform:translateY(-0.5rem);} to{opacity:1; transform:none;}}
+  .nav__cell--logo,
+  .nav__cell--sound,
+  .nav__cell--mail,
+  .nav__link,
+  .nav__toggle,
+  .nav__cta{animation:nav-in 0.5s var(--ease) both;}
+  .nav__cell--logo{animation-delay:0.05s;}
+  .nav__cell--sound{animation-delay:0.12s;}
+  .nav__cell--mail{animation-delay:0.19s;}
+  .nav__link:nth-child(1){animation-delay:0.26s;}
+  .nav__link:nth-child(2){animation-delay:0.33s;}
+  .nav__link:nth-child(3){animation-delay:0.40s;}
+  /* The toggle stands in for the centre links on narrow screens, so it takes
+     their slot in the order rather than the CTA's. */
+  .nav__toggle{animation-delay:0.33s;}
+  .nav__cta{animation-delay:0.47s;}
 
   /* The hero headline assembles itself a word at a time. The words are
      wrapped by script, so the markup stays a plain headline — see the
@@ -2102,9 +2135,12 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
     /* A softer landing than the shared ease: this one overshoots slightly
        less and settles longer, which stops eleven words in a row reading
        as a flicker. */
-    transition:opacity 0.5s var(--ease),
-               transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay:calc(var(--i) * 45ms);
+    transition:opacity 0.8s var(--ease),
+               transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    /* The 0.55s base holds the headline back until the eyebrow has arrived,
+       so the hero plays as one sequence rather than two things at once. Then
+       each word follows the last. */
+    transition-delay:calc(0.55s + var(--i) * 75ms);
   }
 }
 
@@ -2215,31 +2251,6 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 <div class="grain grain--tone" aria-hidden="true"></div>
 <div class="grain grain--lift" aria-hidden="true"></div>
 
-<!-- ================= FIRST-VISIT PROMPTS =================
-     Storage notice first, then the sound offer. Both remembered, and the
-     sound can still be changed from the nav at any time. -->
-<div class="prompt" data-prompt hidden>
-
-  <section class="prompt__card" data-prompt-storage aria-label="Storage notice">
-    <p class="prompt__text">
-      DearYou keeps one thing on this device: whether you want sound. No
-      analytics, no tracking, nobody else gets told.
-    </p>
-    <div class="prompt__acts">
-      <button class="prompt__btn prompt__btn--yes" type="button" data-storage="ok">That is fine</button>
-      <button class="prompt__btn" type="button" data-storage="no">No thanks</button>
-    </div>
-  </section>
-
-  <section class="prompt__card" data-prompt-sound hidden aria-label="Sound">
-    <p class="prompt__text">Continue with sound?</p>
-    <div class="prompt__acts">
-      <button class="prompt__btn prompt__btn--yes" type="button" data-sound="yes">Yes</button>
-      <button class="prompt__btn" type="button" data-sound="no">No</button>
-    </div>
-  </section>
-
-</div>
 
 <!-- ================= NAV ================= -->
 <header class="nav">
@@ -2292,6 +2303,11 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
     </div>
 
   </nav>
+
+  <!-- Replaces the old first-visit card: sound is on by default and this is
+       the quiet note that says so. Positioned under the sound cell and shown
+       once by the ambient script below. -->
+  <p class="soundhint" data-sound-hint hidden aria-hidden="true">Sound is on. Tap the bars to mute.</p>
 
   <!-- The mobile panel. Serif and sentence case, as the "What you can leave"
        rows and the footer line are — the uppercase lockup would shout at
@@ -3219,7 +3235,16 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
      currently talking over it. The bed plays only when the setting is on
      and nothing holds it down, and every move between those states runs
      through fadeTo, so it is never cut off mid-note. */
-  let wanted = false;
+  /* The visitor's setting, remembered across visits and defaulting to ON:
+     the ambient bed is part of the piece here, not an extra to hunt for and
+     switch on. localStorage is guarded (private mode throws); if it cannot
+     be read the default simply applies each visit. Only an explicit mute is
+     stored as 'off', so a first-time visitor and a returning one who has
+     never muted both come in with it on. */
+  const KEY = 'written.sound';
+  const readPref  = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+  const writePref = v => { try { localStorage.setItem(KEY, v); } catch {} };
+  let wanted = readPref() !== 'off';
   const holds = new Set();
 
   const settle = () => {
@@ -3254,6 +3279,9 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       wanted = false;
       setState(false);
     }
+    // Remember the choice. Replaces the old storage-consent card: a mute
+    // preference is a functional setting, not tracking.
+    writePref(wanted ? 'on' : 'off');
     settle();
   });
 
@@ -3269,6 +3297,66 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
       settle();
     }
   });
+
+  /* Reflect the stored setting at once, so the bars read as on from the
+     first paint. The bed itself cannot start yet — a browser blocks audio
+     until the visitor interacts — so `prime` below starts it on the first
+     gesture. This is the honest reading of "on": it is on, waiting for the
+     one interaction the browser insists on. */
+  setState(wanted);
+
+  const prime = e => {
+    // The sound button owns its own clicks; a first gesture there is a mute,
+    // handled by its click listener, not a reason to start playback.
+    if (e && e.target && e.target.closest && e.target.closest('.nav__cell--sound')) return;
+    removeEventListener('pointerdown', prime, true);
+    removeEventListener('keydown', prime, true);
+    removeEventListener('wheel', prime, true);
+    removeEventListener('touchstart', prime, true);
+    if (wanted && audio.paused) settle();
+  };
+  if (wanted) {
+    addEventListener('pointerdown', prime, true);
+    addEventListener('keydown', prime, true);
+    addEventListener('wheel', prime, true);
+    addEventListener('touchstart', prime, true);
+  }
+
+  /* The small note under the icon, in place of the old card. Shown once,
+     only while sound is actually on, a moment after the nav has settled; it
+     says what is happening and how to stop it, then leaves on its own or on
+     the first interaction. Positioned by measuring the sound cell, since the
+     bar clips its own overflow and cannot hold it. */
+  const hint = document.querySelector('[data-sound-hint]');
+  const GESTURES = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+  // Shown on every page load while sound is on, not just the first visit.
+  if (hint && wanted) {
+    const place = () => {
+      const r = btn.getBoundingClientRect();
+      hint.style.left = Math.round(r.left) + 'px';
+      hint.style.top  = Math.round(r.bottom + 8) + 'px';
+    };
+    let hideT;
+    const dismissHint = () => {
+      clearTimeout(hideT);
+      removeEventListener('resize', place);
+      GESTURES.forEach(ev => removeEventListener(ev, dismissHint, true));
+      hint.removeAttribute('data-show');
+      setTimeout(() => { hint.hidden = true; }, 500);
+    };
+    /* Shown a moment after the nav has settled, then wired to leave on the
+       next interaction or after a few seconds. Arming the dismiss here rather
+       than at load means an early scroll can never suppress it before it has
+       appeared. */
+    setTimeout(() => {
+      place();
+      hint.hidden = false;
+      requestAnimationFrame(() => hint.setAttribute('data-show', ''));
+      addEventListener('resize', place);
+      hideT = setTimeout(dismissHint, 6000);
+      GESTURES.forEach(ev => addEventListener(ev, dismissHint, { once: true, capture: true }));
+    }, 1400);
+  }
 
   /* Handed to the media players. A Set rather than a flag, so two players
      can never release each other's duck. */
@@ -3845,67 +3933,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 })();
 
 /* ---------------------------------------------------------------------
-   First-visit prompts. Storage notice, then the sound offer.
-
-   Two notes on how this is wired. The sound answer runs through the nav
-   toggle rather than touching the audio itself, so there is one code path
-   and the button, the pill and the stored value can never disagree. And it
-   only ever starts on a real click — a browser will refuse audio otherwise,
-   which is also the behaviour you want.
+   REMOVED: the first-visit prompt cards. Sound is on by default now and the
+   small note under the sound icon (see the ambient block above) replaces
+   the old storage/sound questions.
    --------------------------------------------------------------------- */
-(() => {
-  const wrap = document.querySelector('[data-prompt]');
-  if (!wrap) return;
-  const storageCard = wrap.querySelector('[data-prompt-storage]');
-  const soundCard   = wrap.querySelector('[data-prompt-sound]');
-  const toggle      = document.querySelector('.nav__cell--sound');
-
-  const KEY = { storage: 'written.storage', sound: 'written.sound' };
-
-  // localStorage throws in private modes and when storage is blocked, so
-  // every touch of it is guarded. If it is unavailable the prompts simply
-  // show each visit rather than the page breaking.
-  const read = k => { try { return localStorage.getItem(k); } catch { return null; } };
-  const write = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
-
-  const storageChoice = read(KEY.storage);
-  const soundChoice   = read(KEY.sound);
-
-  const openSound = () => {
-    if (soundChoice) { wrap.hidden = true; return; }
-    storageCard.hidden = true;
-    soundCard.hidden = false;
-    wrap.hidden = false;
-  };
-
-  if (!storageChoice)      { wrap.hidden = false; }
-  else if (!soundChoice)   { openSound(); }
-
-  wrap.querySelectorAll('[data-storage]').forEach(b =>
-    b.addEventListener('click', () => {
-      // Only remember the answer if they agreed to us remembering things.
-      if (b.dataset.storage === 'ok') write(KEY.storage, 'ok');
-      openSound();
-    }));
-
-  wrap.querySelectorAll('[data-sound]').forEach(b =>
-    b.addEventListener('click', () => {
-      const yes = b.dataset.sound === 'yes';
-      if (read(KEY.storage) === 'ok') write(KEY.sound, yes ? 'on' : 'off');
-      if (yes && toggle && toggle.getAttribute('aria-pressed') !== 'true') toggle.click();
-      wrap.hidden = true;
-    }));
-
-  // Keep the stored preference in step with the nav toggle.
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      if (read(KEY.storage) !== 'ok') return;
-      // Read after the toggle's own handler has run.
-      setTimeout(() => write(KEY.sound, toggle.getAttribute('aria-pressed') === 'true' ? 'on' : 'off'), 0);
-    });
-  }
-})();
-
 /* ---------------------------------------------------------------------
    Nav contrast. The bar is a translucent wine panel, which carries its
    paper-coloured type easily over the dark sections and not at all over
