@@ -2097,8 +2097,18 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   display:flex; flex-direction:column; gap:var(--space-4);
   text-align:left;
 }
-.fnote[open]{animation:dlIn 0.4s var(--ease);}
-@media (prefers-reduced-motion:reduce){ .fnote[open]{animation:none;} }
+/* The note is the first thing on the page and it is a letter, so it should
+   arrive rather than appear: a long, near-pure fade with only a whisper of
+   rise. Its own keyframes rather than dlIn, which the download dialog shares
+   and should stay quick. The backdrop settles first and faster, so the paper
+   is not landing on a hard edge. */
+.fnote[open]{animation:fnoteIn 1.6s var(--ease) both;}
+.fnote[open]::backdrop{animation:fnoteBackdropIn 0.9s var(--ease) both;}
+@keyframes fnoteIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+@keyframes fnoteBackdropIn{from{opacity:0;} to{opacity:1;}}
+@media (prefers-reduced-motion:reduce){
+  .fnote[open], .fnote[open]::backdrop{animation:none;}
+}
 .fnote__x{
   position:absolute; top:0.75rem; right:0.75rem;
   display:grid; place-items:center; width:2rem; height:2rem;
@@ -2711,7 +2721,7 @@ html.intro-hold [data-words] .w{
       </div>
 
       <ul class="feat__stack">
-        <li class="usp" style="--i:0; --rot:-7deg">
+        <li class="usp" style="--i:0; --rot:-6deg">
           <h3 class="usp__title">You hold the key</h3>
           <span class="usp__mark" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -2722,7 +2732,7 @@ html.intro-hold [data-words] .w{
           </span>
           <p class="usp__note">Encrypted end to end. No one at DearYou can ever read it.</p>
         </li>
-        <li class="usp" style="--i:1; --rot:-2.5deg">
+        <li class="usp" style="--i:1; --rot:-1deg">
           <h3 class="usp__title">Sealed until you say</h3>
           <span class="usp__mark" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -2733,19 +2743,7 @@ html.intro-hold [data-words] .w{
           </span>
           <p class="usp__note">You choose when the time is right, a certain date, a birthday, or in person.</p>
         </li>
-        <li class="usp" style="--i:2; --rot:2.5deg">
-          <h3 class="usp__title">Nothing expires</h3>
-          <span class="usp__mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                 stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8"/>
-            </svg>
-          </span>
-          <!-- OPEN in the 31 Aug 2026 amendments: left exactly as it is
-               until Bill confirms what this promise means product-wise. -->
-          <p class="usp__note">A vault that closes because a card lapsed is not a vault. Yours stays.</p>
-        </li>
-        <li class="usp" style="--i:3; --rot:7deg">
+        <li class="usp" style="--i:2; --rot:6deg">
           <h3 class="usp__title">Someone you trust</h3>
           <span class="usp__mark" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -3352,15 +3350,19 @@ html.intro-hold [data-words] .w{
       </svg>
     </button>
     <p class="fnote__kicker" id="fnote-kicker">A note from our founder</p>
-    <p class="fnote__greeting">Dear <span class="serif">you,</span></p>
+    <p class="fnote__greeting">Dear<span class="serif">You,</span></p>
     <p class="fnote__body">
-      You are not alone in this journey. I understand the struggle. I have
-      lived it.
+      You are not alone in this journey. Thousands of parents just like you
+      are experiencing the same silence, just in different ways.
     </p>
     <p class="fnote__body">
-      DearYou is your safe place. Somewhere to leave a piece of yourself for
-      them, so they know, without question, that they were always in your
-      heart.
+      I understand your struggle. I am personally living it, and that's why
+      I created DearYou.
+    </p>
+    <p class="fnote__body">
+      DearYou is now your safe place. Somewhere to leave a piece of yourself
+      for them, so they know, without question, that they have always been in
+      your heart.
     </p>
     <p class="fnote__sign">
       With you in this,<br>
