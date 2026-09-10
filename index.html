@@ -1103,6 +1103,12 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
      player holds the frame's 2:3 box. */
   aspect-ratio:auto;
   width:100%; height:100%; min-height:0;
+  /* The deck below is a fixed stack of controls, so the height it leaves for
+     this cover swings from ~56px on a short viewport to ~124px on a tall one.
+     Making the cover a size container lets the title scale to that real height
+     (see cqh below) instead of to the viewport, so it can never outgrow the
+     field and clip. */
+  container-type:size;
 }
 .vp[data-flush="true"]{
   background:var(--swatch-red-500);
@@ -1121,13 +1127,16 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 .vp[data-flush="false"] .vp__coverTitle{display:none;}
 .vp__coverTitle{
   position:relative; z-index:1;
-  margin:0; padding:var(--space-4);
+  /* Horizontal padding only. Vertical padding here was eating the short
+     cover before the title even began, which is what forced the second line
+     past the bottom edge. Centring is handled by the cover's place-items. */
+  margin:0; padding-inline:var(--space-4); padding-block:0;
   font-family:var(--font-display); font-weight:var(--weight-display);
-  /* Set to fill the field the way the reference does, not to sit politely
-     in the middle of it. balance keeps a two or three line title even.
-     Short placeholder names leave air above and below; a real title runs to
-     two or three lines and takes up the field properly. */
-  font-size:clamp(2.125rem, 1.5rem + 2.6vw, 3rem);
+  /* Sized against the cover's own height (cqh), not the viewport. 34cqh keeps
+     a two-line title inside the field with air to spare at every cover height,
+     and the 3rem cap stops it running oversized on a tall viewport. This is
+     what fills the field the way the reference does without ever clipping. */
+  font-size:min(3rem, 34cqh);
   line-height:1.05; letter-spacing:0; text-transform:none;
   color:var(--vp-ink); text-align:center; text-wrap:balance;
 }
