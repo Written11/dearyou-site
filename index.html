@@ -1606,18 +1606,25 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   /* Blur cross-fade between voices, echoing the epigraph's blur reveal. The
      outgoing line softens and fades quickly; visibility is held through the
      fade (delayed to the end) so the exit is actually seen, then flips to
-     hidden so gone quotes leave the tab order and screen reader alone. */
-  opacity:0; visibility:hidden; filter:blur(8px);
+     hidden so gone quotes leave the tab order and screen reader alone.
+     opacity + transform ride the compositor; will-change keeps the browser
+     from re-promoting the layer on every switch, so rapid hovers stay smooth. */
+  opacity:0; visibility:hidden; filter:blur(6px);
+  transform:translateY(0.35rem);
+  will-change:opacity, transform, filter;
   transition:opacity 0.35s var(--ease),
              filter 0.35s var(--ease),
+             transform 0.35s var(--ease),
              visibility 0s linear 0.35s;
 }
 /* The incoming line resolves from the blur into focus, a touch slower than
    the exit so the two never muddle. */
 .voice__quote.is-on{
   opacity:1; visibility:visible; filter:blur(0);
-  transition:opacity 0.6s var(--ease),
-             filter 0.6s var(--ease),
+  transform:translateY(0);
+  transition:opacity 0.55s var(--ease),
+             filter 0.55s var(--ease),
+             transform 0.55s var(--ease),
              visibility 0s;
 }
 .voice__quote::before{content:'\201C';}
@@ -1682,6 +1689,12 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 @media (prefers-reduced-motion:reduce){
   .dragcur{transition:none;}
+  /* No blur or travel when motion is unwelcome — quotes cut over plainly. */
+  .voice__quote, .voice__quote.is-on{
+    filter:none; transform:none;
+    transition:opacity 0.2s linear, visibility 0s linear 0.2s;
+  }
+  .voice__quote.is-on{transition:opacity 0.2s linear, visibility 0s;}
 }
 
 /* =====================================================================
@@ -2524,11 +2537,11 @@ html.intro-hold [data-words] .w{
               aria-controls="nav-panel" data-nav-toggle>
         <span data-nav-toggle-label>Menu</span>
       </button>
-      <button class="nav__cta" type="button" data-waitlist>
-        <!-- "Join the waitlist" wraps to two lines in this bar on a phone.
+      <button class="nav__cta" type="button" data-webapp>
+        <!-- "Create Vault Now" wraps to two lines in this bar on a phone.
              The short form keeps it on one. -->
-        <span class="nav__cta-long">Join the waitlist</span>
-        <span class="nav__cta-short">Waitlist</span>
+        <span class="nav__cta-long">Create Vault Now</span>
+        <span class="nav__cta-short">Create Vault</span>
         <span class="ctl__icon" aria-hidden="true">
           <svg viewBox="0 0 12 12" fill="none">
             <path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5" stroke="currentColor" stroke-width="1.6"
@@ -2619,11 +2632,23 @@ html.intro-hold [data-words] .w{
       </p>
 
       <div class="hero__actions">
-        <button class="ctl ctl--solid" type="button" data-waitlist>
-          <span class="ctl__label">Join the waitlist</span>
+        <!-- Two ways in now the product ships on web and as an app. "Continue
+             on the web" opens the browser app; "Download the app" opens the
+             platform-picker dialog (iOS / Android). -->
+        <button class="ctl ctl--solid" type="button" data-webapp>
+          <span class="ctl__label">Continue on the web</span>
           <span class="ctl__icon" aria-hidden="true">
             <svg viewBox="0 0 12 12" fill="none">
               <path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5" stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+        <button class="ctl ctl--outline" type="button" data-download>
+          <span class="ctl__label">Download the app</span>
+          <span class="ctl__icon" aria-hidden="true">
+            <svg viewBox="0 0 12 12" fill="none">
+              <path d="M6 1v8M2.5 5.5 6 9l3.5-3.5M1 11h10" stroke="currentColor" stroke-width="1.6"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </span>
@@ -2782,9 +2807,8 @@ html.intro-hold [data-words] .w{
       <div class="step__body">
         <h3 class="display step__title">Write it <em class="serif">while you can</em></h3>
         <p class="step__note">
-          A letter, a voice note on the drive home, a photograph with a sentence
-          under it. Small entries add up faster than a long letter you keep
-          meaning to write.
+          Write a letter, leave a voice note on the way home, record a video
+          that lasts forever or take a photo that says a thousand words.
         </p>
       </div>
       <figure class="step__media">
@@ -2813,9 +2837,9 @@ html.intro-hold [data-words] .w{
       <div class="step__body">
         <h3 class="display step__title">Release it <em class="serif">when it is time</em></h3>
         <p class="step__note">
-          When the time comes, they open a private link and step into a place
+          When the time comes, they use a code to gain access to a private place
           made just for them. Everything you kept, waiting exactly as you left
-          it. Not an app they downloaded. A place you built for them.
+          it. A place you created for them.
         </p>
       </div>
       <figure class="step__media">
@@ -3063,8 +3087,8 @@ html.intro-hold [data-words] .w{
       room. A distance no one chose but everyone has to live with.
     </p>
     <p class="why__body">
-      DearYou was built for the parents still showing up, even when they cannot
-      be there, and for grandparents who know how short the window is.
+      DearYou was built for the ones still showing up, even when they cannot
+      be there, and for the ones who know how short the window is.
     </p>
 
     <button class="why__link" type="button" data-waitlist>
@@ -3220,8 +3244,8 @@ html.intro-hold [data-words] .w{
           Unlimited letters, voice and video. Scheduled release, birthday
           triggers, one named trustee, and full-quality storage for every child.
         </p>
-        <button class="ctl ctl--solid" type="button" data-waitlist>
-          <span class="ctl__label">Join the waitlist</span>
+        <button class="ctl ctl--solid" type="button" data-checkout="vault">
+          <span class="ctl__label">Choose Vault</span>
           <span class="ctl__icon" aria-hidden="true">
             <svg viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5"
               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -3237,8 +3261,8 @@ html.intro-hold [data-words] .w{
           Everything in Vault, held for life with no renewals to miss. Endowed
           storage, so a lapsed card can never close the vault on your children.
         </p>
-        <button class="ctl ctl--outline" type="button" data-waitlist>
-          <span class="ctl__label">Reserve Forever</span>
+        <button class="ctl ctl--outline" type="button" data-checkout="forever">
+          <span class="ctl__label">Choose Forever</span>
           <span class="ctl__icon" aria-hidden="true">
             <svg viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5"
               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -3335,10 +3359,10 @@ html.intro-hold [data-words] .w{
 </footer>
 
 <!-- ================= DOWNLOAD DIALOG =================
-     DORMANT. Nothing opens this any more — the page is pre-launch and every
-     CTA now goes to the waitlist. Kept intact, with its QR generation, so it
-     can be switched back on at launch: point the store URLs at the real
-     listings and put data-download="ios" / "android" back on a button. -->
+     LIVE. Opened by the hero "Download the app" button (data-download).
+     Step 1 asks iOS / Android; on desktop step 2 shows a QR to scan, on a
+     phone it opens the store directly. Set the real store URLs in the STORES
+     object in the dialog's script to go fully live. -->
 <!-- ================= DOWNLOAD DIALOG ================= -->
 <!-- First-visit card: a note from our founder, shown once over the page on
      load. Copy taken from the vault app's founder screen. -->
@@ -4879,9 +4903,30 @@ window.DearYou = window.DearYou || {};
 
   // Desktop: click a name. Mobile: step with the previous / next buttons.
   // Both wrap around, so there is no dead end at either end.
-  picks.forEach(p => p.addEventListener('click', () => show(+p.dataset.voiceGo)));
-  if (prevBtn) prevBtn.addEventListener('click', () => show(i - 1));
-  if (nextBtn) nextBtn.addEventListener('click', () => show(i + 1));
+  let hoverTimer = 0;
+  const goTo = n => { clearTimeout(hoverTimer); show(n); };
+  picks.forEach(p => p.addEventListener('click', () => goTo(+p.dataset.voiceGo)));
+  if (prevBtn) prevBtn.addEventListener('click', () => goTo(i - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goTo(i + 1));
+
+  // Desktop hover: on a pointer that can truly hover (a mouse, not a touch
+  // screen), settling on a name switches the quote to it, so the reader can
+  // skim the families just by sliding down the list. A short intent delay
+  // means dragging the pointer PAST names does not fire a switch for each one
+  // it crosses — only the name you actually pause on wins, so the blur fade
+  // runs once cleanly instead of a stack of interrupted fades. Touch devices
+  // report no hover and keep the tap / arrow behaviour untouched.
+  const canHover = matchMedia('(hover: hover) and (pointer: fine)');
+  picks.forEach(p => {
+    p.addEventListener('mouseenter', () => {
+      if (!canHover.matches) return;
+      const target = +p.dataset.voiceGo;
+      clearTimeout(hoverTimer);
+      if (target === i) return;                 // already showing — do nothing
+      hoverTimer = setTimeout(() => show(target), 110);
+    });
+    p.addEventListener('mouseleave', () => clearTimeout(hoverTimer));
+  });
 
   // Arrow keys step through the names when the list has focus, and move the
   // focus with the selection so the reader can keep going from the keyboard.
@@ -5105,6 +5150,24 @@ window.DearYou = window.DearYou || {};
 })();
 
 /* ---------------------------------------------------------------------
+   Pricing CTAs -> checkout. The paid tiers carry data-checkout="vault" /
+   "forever"; Vault also hands the checkout the billing period currently
+   selected on the toggle above, so the choice made here carries over.
+   --------------------------------------------------------------------- */
+(() => {
+  const activeBilling = () => {
+    const on = document.querySelector('[data-billing][aria-pressed="true"]');
+    return on ? on.dataset.billing : 'yearly';
+  };
+  document.querySelectorAll('[data-checkout]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const plan = btn.dataset.checkout;
+      const q = plan === 'vault' ? `?plan=vault&billing=${activeBilling()}` : `?plan=${plan}`;
+      window.location.href = 'checkout.html' + q;
+    }));
+})();
+
+/* ---------------------------------------------------------------------
    Founder note. Shown once, as a card over the page on the first visit.
    Remembered so it does not return on later loads; dismissed by the button,
    the close control, Esc (native to <dialog>) or a click on the backdrop.
@@ -5181,9 +5244,23 @@ window.DearYou = window.DearYou || {};
          + `<path d="${d}" fill="#3A0512"/></svg>`;
   };
 
+  // A phone can install straight from its own store, so scanning a QR of its
+  // own screen makes no sense there. On a touch phone we skip the code and
+  // open the store directly; a desktop (or tablet) gets the QR to scan.
+  const onPhone = matchMedia('(hover: none) and (pointer: coarse)').matches;
+
   const choose = platform => {
     const store = STORES[platform];
     if (!store) return;
+
+    if (onPhone) {
+      // Straight to the listing, in a new tab so the site is still here on
+      // the back swipe. Then close the dialog — its job is done.
+      window.open(store.url, '_blank', 'noopener');
+      dlg.close();
+      return;
+    }
+
     storeEl.textContent = store.label;
     linkEl.href = store.url;
     linkEl.textContent = `Open ${store.label} directly.`;
@@ -5220,6 +5297,23 @@ window.DearYou = window.DearYou || {};
 
   // Click the backdrop to dismiss.
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+})();
+
+/* ---------------------------------------------------------------------
+   Web app entry. "Continue on the web" and "Create Vault Now" both open
+   the browser vault. One place to set the address.
+
+   ONE LINE TO GO LIVE: put the real web-app URL in WEB_APP_URL below.
+   Until then it points at the app subdomain as a sensible default.
+   --------------------------------------------------------------------- */
+(() => {
+  const WEB_APP_URL = 'https://app.dearyou.app';   // TODO: confirm real URL
+
+  document.querySelectorAll('[data-webapp]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      // Same tab: this is a deliberate step into the product, not a detour.
+      window.location.href = WEB_APP_URL;
+    }));
 })();
 </script>
 
