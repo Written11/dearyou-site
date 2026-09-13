@@ -1113,7 +1113,9 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   container-type:size;
 }
 .vp[data-flush="true"]{
-  background:var(--swatch-red-500);
+  /* A bit darker than the brand red — deepened toward black, hue kept, so the
+     paper-on-red text and waveform still read. Local to this player only. */
+  background:color-mix(in srgb, var(--swatch-red-500) 58%, #000);
   border-radius:var(--radius-sm);
   /* Nothing here may change the box. Padding and gap live on .vp so both
      states measure identically. */
@@ -3027,13 +3029,9 @@ html.intro-hold [data-words] .w{
             attached to the image, long after you are not there to explain it.
           </p>
         </div>
-        <figure class="leave__art gal" data-gallery tabindex="0" role="group"
-                aria-label="Photographs and keepsakes, 2 images. Use the left and right arrow keys.">
-          <!-- Pexels 1989747. Pexels licence, free for commercial use. -->
-          <img class="gal__img is-on" src="Images/Photographs.jpeg" alt="" width="1800" height="1125" loading="lazy">
-          <!-- Standing in until a third and fourth picture exist for this row. -->
-          <img class="gal__img" src="Images/Sealed Letter.jpeg" alt="" width="1600" height="1067" loading="lazy">
-          <span class="gal__count" aria-hidden="true"><b data-gal-i>1</b>/<span data-gal-n>2</span></span>
+        <figure class="leave__art gal">
+          <!-- Single image now, not a gallery. -->
+          <img class="gal__img is-on" src="Images/Photographs and keepsakes.jpeg" alt="" width="1145" height="1374" loading="lazy">
         </figure>
         <p class="leave__num">04</p>
       </li>
