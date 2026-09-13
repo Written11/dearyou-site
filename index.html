@@ -651,7 +651,9 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   .step::after{opacity:0;}
 }
 @media (min-width:64rem){
-  .step{grid-template-columns:1fr 1fr; grid-template-rows:auto 1fr;}
+  /* Media a touch narrower than the copy column, so the image reads a bit
+     less wide and the text gets the extra room. */
+  .step{grid-template-columns:1.35fr 0.7fr; grid-template-rows:auto 1fr;}
   .step__num{grid-column:1;}
   .step__body{grid-column:1; align-self:end;}
   .step__media{grid-column:2; grid-row:1 / -1;}
@@ -2868,15 +2870,9 @@ html.intro-hold [data-words] .w{
             back to it next year, or in ten years time.
           </p>
         </div>
-        <figure class="leave__art gal" data-gallery tabindex="0" role="group"
-                aria-label="Letters, 3 images. Use the left and right arrow keys.">
-          <!-- Pexels 5648030 -->
-          <img class="gal__img is-on" src="Images/Writing.jpeg" alt="" width="1600" height="1067" loading="lazy">
-          <!-- Pexels 4247919 -->
-          <img class="gal__img" src="Images/Sealed Letter.jpeg" alt="" width="1600" height="1067" loading="lazy">
-          <!-- Pexels 1550334 -->
-          <img class="gal__img" src="Images/Received.jpeg" alt="" width="1600" height="1067" loading="lazy">
-          <span class="gal__count" aria-hidden="true"><b data-gal-i>1</b>/<span data-gal-n>3</span></span>
+        <figure class="leave__art gal">
+          <!-- Single image now, not a gallery. Pexels 4247919 -->
+          <img class="gal__img is-on" src="Images/Sealed Letter.jpeg" alt="" width="1600" height="1067" loading="lazy">
         </figure>
         <p class="leave__num">01</p>
       </li>
