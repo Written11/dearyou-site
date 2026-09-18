@@ -4595,6 +4595,74 @@ html.intro-hold [data-words] .w{
 })();
 
 /* ---------------------------------------------------------------------
+   Anchor links that would travel THROUGH the vault stack or the step
+   cards. Both are driven by scroll position, so a smooth anchor scroll
+   across them plays their whole choreography at speed — "What you can
+   leave" from the vault panel ran all four cards in half a second, then the
+   steps, before landing. Those links now step over the pinned stretch:
+   <main> fades out, the page jumps, <main> fades back in on the
+   destination. The nav sits outside <main>, so it stays put throughout.
+
+   Only when the path covers a real stretch of a pinned section (half a
+   screen or more); short hops keep the ordinary smooth scroll.
+   --------------------------------------------------------------------- */
+(() => {
+  const main = document.querySelector('main');
+  const pinned = ['vault', 'how'].map(id => document.getElementById(id)).filter(Boolean);
+  if (!main || !pinned.length) return;
+
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const OUT = 160, IN = 380;
+  const span = el => {
+    const top = el.getBoundingClientRect().top + scrollY;
+    return [top, top + el.offsetHeight];
+  };
+
+  document.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = decodeURIComponent(a.getAttribute('href').slice(1));
+    const dest = id && document.getElementById(id);
+    if (!dest) return;
+
+    const from = scrollY, to = span(dest)[0];
+    const lo = Math.min(from, to), hi = Math.max(from, to);
+    const crosses = pinned.some(p => {
+      const [top, bottom] = span(p);
+      return Math.min(hi, bottom) - Math.max(lo, top) > innerHeight * 0.5;
+    });
+    if (!crosses) return;
+
+    e.preventDefault();
+    const land = () => {
+      // `instant` beats :root's scroll-behavior:smooth; scroll-padding-top
+      // still applies, so it lands clear of the nav like any anchor.
+      dest.scrollIntoView({behavior: 'instant', block: 'start'});
+      if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+      // Keyboard activation (detail 0): move focus there too, as following
+      // an anchor would have, so Tab carries on from the new section.
+      if (e.detail === 0) {
+        if (!dest.hasAttribute('tabindex')) dest.setAttribute('tabindex', '-1');
+        dest.focus({preventScroll: true});
+      }
+    };
+
+    if (still.matches) { land(); return; }
+    main.style.transition = `opacity ${OUT}ms ease-out`;
+    main.style.opacity = '0';
+    setTimeout(() => {
+      land();
+      requestAnimationFrame(() => {
+        main.style.transition = `opacity ${IN}ms ease`;
+        main.style.opacity = '';
+        setTimeout(() => { main.style.transition = ''; }, IN);
+      });
+    }, OUT);
+  });
+})();
+
+/* ---------------------------------------------------------------------
    Blocks arrive as they are reached, once each. Anything already driven by
    scroll — the vault stack, the step cards — is left out of this on
    purpose: two things writing transform to one element is a fight.
