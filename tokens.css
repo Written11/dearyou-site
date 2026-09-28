@@ -131,12 +131,12 @@
   --section-y:       clamp(4rem, 2rem + 10vw, 10rem);
   --section-y-large: clamp(6rem, 3rem + 15vw, 15rem);
 
-  /* Squared, not rounded. The reference sits at 2.67px on every control and
-     5.33px on the nav bar itself; nothing on that site is a pill. */
-  --radius-xs:   0.1875rem;  /*  3px — buttons, icon boxes, nav links */
-  --radius-sm:   0.3125rem;  /*  5px — the nav bar, cards */
-  --radius-md:   0.5rem;
-  --radius-lg:   0.75rem;
+  /* Softly rounded. Every control and surface curves from these four
+     tokens, so the whole site rounds together from here. */
+  --radius-xs:   0.5rem;     /*  8px — buttons, icon boxes, nav links */
+  --radius-sm:   0.75rem;    /* 12px — the nav bar, cards */
+  --radius-md:   1rem;       /* 16px — media, larger surfaces */
+  --radius-lg:   1.25rem;    /* 20px — the largest panels */
   --radius-pill: 100vw;      /* status dots only, never a button */
   --border-width: 1px;
 
