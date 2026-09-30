@@ -1883,9 +1883,10 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
 }
 
 /* --- Waitlist field ----------------------------------------------------
-   Posts to Kit, using the form id set in KIT_FORM_ID at the foot of this
-   file. Left empty, it runs in demo mode: validates and confirms locally,
-   sends nothing, and warns in the console. */
+   Two steps in one block: the address form, then a code form that appears
+   after it. Both post to the Supabase functions configured in the waitlist
+   script at the foot of this file (SUPABASE_URL / SUPABASE_ANON_KEY). The
+   person confirms with the 6-digit code here, or the link in the email. */
 .sr-only{
   position:absolute; width:1px; height:1px; padding:0; margin:-1px;
   overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0;
@@ -1932,6 +1933,38 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   width:1px; height:1px; overflow:hidden; opacity:0;
 }
 .signup[data-done="true"]{display:none;}
+
+/* Success popup — the little card that confirms a save. Fixed near the bottom
+   and centred, it lifts and fades in, then dismisses itself or on a click or
+   Escape. The wine card reads on both the light page and the dark footer. */
+.wl-pop{
+  position:fixed; left:0; right:0;
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+  z-index:200; display:flex; justify-content:center;
+  padding-inline:var(--gutter); pointer-events:none;
+}
+.wl-pop[hidden]{display:none;}
+.wl-pop__card{
+  display:flex; align-items:center; gap:var(--space-3);
+  max-width:min(24rem, 100%); padding:0.75rem 1.125rem;
+  background:var(--swatch-wine-800); color:var(--swatch-paper);
+  border-radius:var(--radius-sm);
+  box-shadow:0 12px 30px -12px rgba(20,9,12,0.55);
+  pointer-events:auto; cursor:pointer;
+  opacity:0; translate:0 10px;
+  transition:opacity 0.28s var(--ease), translate 0.28s var(--ease);
+}
+.wl-pop.is-in .wl-pop__card{opacity:1; translate:0 0;}
+.wl-pop__tick{
+  flex:0 0 auto; display:grid; place-items:center;
+  width:1.5rem; height:1.5rem; border-radius:var(--radius-pill);
+  background:color-mix(in srgb, var(--swatch-paper) 16%, transparent);
+}
+.wl-pop__tick svg{width:0.9rem; height:0.9rem; display:block;}
+.wl-pop__text{margin:0; font-size:var(--size-small); line-height:1.5;}
+@media (prefers-reduced-motion: reduce){
+  .wl-pop__card{transition:opacity var(--duration-fast) var(--ease); translate:0 0;}
+}
 .foot__note{
   margin:var(--space-4) 0 0; max-width:34ch;
   font-size:var(--size-small); line-height:1.6; color:var(--swatch-clay);
@@ -2541,11 +2574,11 @@ html.intro-hold [data-words] .w{
               aria-controls="nav-panel" data-nav-toggle>
         <span data-nav-toggle-label>Menu</span>
       </button>
-      <button class="nav__cta" type="button" data-webapp>
-        <!-- "Create Vault Now" wraps to two lines in this bar on a phone.
+      <button class="nav__cta" type="button" data-waitlist>
+        <!-- "Join the waitlist" wraps to two lines in this bar on a phone.
              The short form keeps it on one. -->
-        <span class="nav__cta-long">Create Vault Now</span>
-        <span class="nav__cta-short">Create Vault</span>
+        <span class="nav__cta-long">Join the waitlist</span>
+        <span class="nav__cta-short">Join waitlist</span>
         <span class="ctl__icon" aria-hidden="true">
           <svg viewBox="0 0 12 12" fill="none">
             <path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5" stroke="currentColor" stroke-width="1.6"
@@ -2636,23 +2669,14 @@ html.intro-hold [data-words] .w{
       </p>
 
       <div class="hero__actions">
-        <!-- Two ways in now the product ships on web and as an app. "Continue
-             on the web" opens the browser app; "Download the app" opens the
-             platform-picker dialog (iOS / Android). -->
-        <button class="ctl ctl--solid" type="button" data-webapp>
-          <span class="ctl__label">Continue on the web</span>
+        <!-- Pre-launch the hero funnels to email capture only: the single
+             "Join the waitlist" action scrolls to the waitlist field. The
+             web-app and download entries return once the product is live. -->
+        <button class="ctl ctl--solid" type="button" data-waitlist>
+          <span class="ctl__label">Join the waitlist</span>
           <span class="ctl__icon" aria-hidden="true">
             <svg viewBox="0 0 12 12" fill="none">
               <path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5" stroke="currentColor" stroke-width="1.6"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </button>
-        <button class="ctl ctl--outline" type="button" data-download>
-          <span class="ctl__label">Download the app</span>
-          <span class="ctl__icon" aria-hidden="true">
-            <svg viewBox="0 0 12 12" fill="none">
-              <path d="M6 1v8M2.5 5.5 6 9l3.5-3.5M1 11h10" stroke="currentColor" stroke-width="1.6"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </span>
@@ -3355,7 +3379,8 @@ html.intro-hold [data-words] .w{
 </footer>
 
 <!-- ================= DOWNLOAD DIALOG =================
-     LIVE. Opened by the hero "Download the app" button (data-download).
+     PARKED pre-launch: no visible button opens this while the site funnels
+     to email capture only. Restore a [data-download] CTA to bring it back.
      Step 1 asks iOS / Android; on desktop step 2 shows a QR to scan, on a
      phone it opens the store directly. Set the real store URLs in the STORES
      object in the dialog's script to go fully live. -->
@@ -5025,86 +5050,95 @@ window.DearYou = window.DearYou || {};
 })();
 
 /* ---------------------------------------------------------------------
-   Waitlist field.
+   Waitlist — one click to join.
 
-   ONE LINE TO GO LIVE: build the form in Kit, take the numeric id out of
-   its embed code, and paste it into KIT_FORM_ID below. Empty, the field
-   runs in demo mode — it validates, confirms, and posts nothing, with a
-   warning in the console so nobody mistakes it for a working signup.
+   Enter an email, submit, and it is saved straight to the waitlist through the
+   public waitlist-join function. No confirmation step: a small popup confirms
+   the save and the field settles into its done state.
 
-   Why this endpoint: it is the one Kit's own embed posts to, so it needs
-   no API key sitting in the page source and it accepts cross-origin posts
-   by design. Verified from a third-party origin before it was written in.
+   ONE LINE TO GO LIVE: paste the project's anon key into SUPABASE_ANON_KEY
+   below. It is public by design; row level security protects the list. Empty,
+   the field validates but the save fails and the note says so, rather than
+   pretending to work. Setup and secrets: ../vault app/supabase/WAITLIST.md.
    --------------------------------------------------------------------- */
 (() => {
-  const KIT_FORM_ID = '';              // e.g. '8123456', digits only
-  const TIMEOUT_MS  = 12000;           // a hung request must not lock the form
-
-  const endpoint = id => `https://app.kit.com/forms/${id}/subscriptions`;
+  const SUPABASE_URL      = 'https://nxneudtptssdyrbfxnjl.supabase.co';
+  const SUPABASE_ANON_KEY = '';            // ← paste the anon key to go live
+  const FN         = `${SUPABASE_URL}/functions/v1`;
+  const TIMEOUT_MS = 12000;                // a hung request must not lock the form
 
   const COPY = {
     invalid: 'That address does not look right. Check it and try again.',
-    sending: 'Sending your address.',
-    done:    'Thank you, you are on the list.',
-    failed:  'That did not send. Try again, or write to hello@foreverdearyou.app and we will add you.'
+    sending: 'Saving your email.',
+    saved:   'Your email has been saved.',
+    already: 'You are already on the list.',
+    failed:  'That did not save. Try again, or write to hello@foreverdearyou.app and we will add you.',
   };
 
   // type="email" alone passes "a@b". A list you intend to mail wants a
   // dotted domain, so check for one rather than trusting checkValidity().
   const looksLikeEmail = v => /^[^\s@]+@[^\s@.]+\.[^\s@]{2,}$/.test(v);
 
-  /* Kit answers 200 even when it refuses the request. A wrong form id or a
-     rejected address comes back as {"status":"failed", errors:{...}} over an
-     OK status line, so the body is the verdict and res.ok on its own would
-     confirm every failure to the visitor. */
-  const accepted = async res => {
-    if (!res.ok) return false;
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      return true;                      // a 2xx that is not JSON: take it
-    }
-    if (data && typeof data.status === 'string') {
-      if (data.status === 'failed') {
-        console.error('[DearYou] Kit refused the signup:', data.errors);
-        return false;
-      }
-      return true;                      // "success", and "quarantined" is on the list too
-    }
-    return true;
+  /* The success popup, built once and shared by both fields. A small card that
+     lifts in over the page and dismisses itself, or on a click or Escape.
+     role=status + aria-live so a screen reader hears the confirmation too. */
+  const popup = document.createElement('div');
+  popup.className = 'wl-pop';
+  popup.setAttribute('role', 'status');
+  popup.setAttribute('aria-live', 'polite');
+  popup.hidden = true;
+  popup.innerHTML =
+    '<div class="wl-pop__card">' +
+      '<span class="wl-pop__tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">' +
+        '<path d="M5 12.5 10 17l9-10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+      '<p class="wl-pop__text"></p>' +
+    '</div>';
+  document.body.appendChild(popup);
+  const popText = popup.querySelector('.wl-pop__text');
+  let popTimer;
+  const showPopup = msg => {
+    popText.textContent = msg;
+    popup.hidden = false;
+    void popup.offsetWidth;              // reflow, so the fade runs on a re-show
+    popup.classList.add('is-in');
+    clearTimeout(popTimer);
+    popTimer = setTimeout(hidePopup, 3600);
   };
+  const hidePopup = () => {
+    popup.classList.remove('is-in');
+    clearTimeout(popTimer);
+    setTimeout(() => { popup.hidden = true; }, 280);  // wait out the fade
+  };
+  popup.addEventListener('click', hidePopup);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !popup.hidden) hidePopup(); });
 
-  const send = async email => {
-    if (!KIT_FORM_ID) {
-      console.warn('[DearYou] KIT_FORM_ID is empty: this signup was not sent anywhere.');
-      return true;                      // demo mode behaves as if accepted
-    }
+  /* One POST helper. The anon key rides along as apikey and bearer when set. A
+     timeout keeps a hung network from locking the button. Returns {ok, data};
+     the JSON body is the verdict. */
+  const post = async (path, body) => {
     const stop  = new AbortController();
     const timer = setTimeout(() => stop.abort(), TIMEOUT_MS);
     try {
-      const res = await fetch(endpoint(KIT_FORM_ID), {
+      const res = await fetch(`${FN}/${path}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json',
+          ...(SUPABASE_ANON_KEY ? { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } : {}),
         },
-        // The field has to be called email_address. Under any other name
-        // Kit still returns 200 and drops the address on the floor.
-        body: new URLSearchParams({email_address: email}).toString(),
-        signal: stop.signal
+        body: JSON.stringify(body),
+        signal: stop.signal,
       });
-      return await accepted(res);
+      const data = await res.json().catch(() => ({}));
+      return { ok: res.ok, status: res.status, data };
     } catch {
-      return false;                     // offline, blocked, or timed out
+      return { ok: false, status: 0, data: {} };
     } finally {
       clearTimeout(timer);
     }
   };
 
-  /* Everything above is shared. Everything below is per field, because the
-     page now has two of them — the footer and the mobile menu — and each
-     needs its own busy flag, its own note and its own submitted state. */
+  /* Per field, because the page has two — the footer and the mobile menu. Each
+     needs its own busy flag, its own note and its own done state. */
   document.querySelectorAll('[data-waitlist-form]').forEach(form => {
     const block = form.closest('[data-waitlist-block]');
     const note  = block && block.querySelector('[data-close-note]');
@@ -5114,25 +5148,23 @@ window.DearYou = window.DearYou || {};
     const button = form.querySelector('.signup__go');
     const label  = button.querySelector('.ctl__label');
     const trap   = form.elements._gotcha;
+    const source = block.classList.contains('navmenu__signup') ? 'menu' : 'footer';
 
-    // The idle strings live in the markup, so they are not written twice.
     const idleNote  = note.textContent.trim();
     const idleLabel = label.textContent.trim();
-
     let busy = false;
 
     const setBusy = state => {
       busy = state;
       form.setAttribute('aria-busy', String(state));
-      button.disabled   = state;
-      // readOnly, not disabled: the address stays legible while it sends.
-      field.readOnly    = state;
-      label.textContent = state ? 'Sending' : idleLabel;
+      button.disabled = state;
+      field.readOnly  = state;             // legible while it saves
+      label.textContent = state ? 'Saving' : idleLabel;
     };
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
-      if (busy) return;                 // double-click must not post twice
+      if (busy) return;                    // double-click must not post twice
 
       const email = field.value.trim();
       if (!looksLikeEmail(email)) {
@@ -5142,11 +5174,12 @@ window.DearYou = window.DearYou || {};
         return;
       }
 
-      // A filled honeypot is a bot. Give it the confirmed state and send
-      // nothing, so it has no signal that it was caught.
+      // A filled honeypot is a bot. Show the saved state and post nothing, so
+      // it gets no signal it was caught.
       if (trap && trap.value !== '') {
         form.setAttribute('data-done', 'true');
-        note.textContent = COPY.done;
+        note.textContent = COPY.saved;
+        showPopup(COPY.saved);
         return;
       }
 
@@ -5154,14 +5187,16 @@ window.DearYou = window.DearYou || {};
       setBusy(true);
       note.textContent = COPY.sending;
 
-      const ok = await send(email);
+      const { ok, data } = await post('waitlist-join', { email, source });
       setBusy(false);
 
       if (ok) {
+        const msg = data.status === 'already' ? COPY.already : COPY.saved;
         form.setAttribute('data-done', 'true');
-        note.textContent = COPY.done;   // their own copy for the sent state
+        note.textContent = msg;
+        showPopup(msg);
       } else {
-        note.textContent = COPY.failed; // the address is still in the field
+        note.textContent = COPY.failed;    // the address is still in the field
         field.focus();
       }
     });
@@ -5172,12 +5207,6 @@ window.DearYou = window.DearYou || {};
       if (!busy && note.textContent !== idleNote) note.textContent = idleNote;
     });
   });
-
-  /* One thing to decide in Kit itself, not here: if the form is set to
-     double opt-in, the address is not on the list until the visitor clicks
-     the confirmation mail. The note above would then be promising slightly
-     more than has happened. Either turn opt-in off for the waitlist, or
-     change COPY.done to send them to their inbox. */
 })();
 
 /* ---------------------------------------------------------------------
