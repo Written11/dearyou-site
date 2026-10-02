@@ -28,3 +28,10 @@ _*.html
 
 # Encoder source, kept locally so the ambient loop can be rebuilt. Not deployed.
 Audio/ambient.original.mp3
+
+# Raw video masters. These exceed GitHub's 100 MB file limit and are not served
+# as-is — transcode/host before wiring into the page.
+*.mov
+
+# Claude Code local session config
+.claude/
