@@ -1743,13 +1743,6 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   background:color-mix(in srgb, var(--swatch-paper) 20%, transparent);
   color:var(--swatch-paper);
 }
-/* Provisional note beside the saving — lower case and quiet, so it reads as an
-   internal placeholder rather than part of the offer. */
-.billing__tbc{
-  margin-left:0.375rem;
-  font-size:0.6875em; text-transform:none; letter-spacing:0;
-  font-style:italic; opacity:0.75;
-}
 .billing{
   display:inline-flex; margin-top:var(--space-2);
   border:1px solid var(--swatch-sand);
@@ -3235,10 +3228,10 @@ html.intro-hold [data-words] .w{
 
       <div class="billing" role="group" aria-label="Billing period">
         <button class="billing__opt" type="button" data-billing="monthly" aria-pressed="false">Monthly</button>
-        <!-- Annual is marketed as a 15% discount; the yearly total ($109.99)
-             is held fixed and the badge states that saving. -->
+        <!-- 12 months at $9.99 is $119.88; the yearly total is $99.99, a saving
+             of ~17% ($19.89). Keep this badge in step with those figures. -->
         <button class="billing__opt" type="button" data-billing="yearly" aria-pressed="true">
-          Yearly <span class="billing__save">Save 15%</span><span class="billing__tbc">(to be calculated)</span>
+          Yearly <span class="billing__save">Save 17%</span>
         </button>
       </div>
     </div>
@@ -3267,7 +3260,7 @@ html.intro-hold [data-words] .w{
       <article class="tier tier--featured">
         <p class="tier__flag">Most families</p>
         <h3 class="tier__name">Vault</h3>
-        <p class="tier__price"><span class="tier__amount" data-vault-amount>$109.99</span></p>
+        <p class="tier__price"><span class="tier__amount" data-vault-amount>$99.99</span></p>
         <p class="tier__terms" data-vault-terms>Per year</p>
         <p class="tier__desc">
           Unlimited letters, voice and video. Scheduled release, birthday
@@ -5296,11 +5289,11 @@ window.DearYou = window.DearYou || {};
    while this changes.
    --------------------------------------------------------------------- */
 (() => {
-  // Canonical pricing: $9.99/month or $109.99/year, both on 50 GB. The monthly
+  // Canonical pricing: $9.99/month or $99.99/year, both on 50 GB. The monthly
   // card shows the monthly rate; the yearly card shows the annual total.
   const VAULT = {
     monthly: { amount: '$9.99',   terms: 'Per month' },
-    yearly:  { amount: '$109.99', terms: 'Per year' }
+    yearly:  { amount: '$99.99', terms: 'Per year' }
   };
 
   const opts   = [...document.querySelectorAll('[data-billing]')];
