@@ -3266,7 +3266,7 @@ html.intro-hold [data-words] .w{
           Unlimited letters, voice and video. Scheduled release, birthday
           triggers, one named trustee, and 50 GB of full-quality storage.
         </p>
-        <button class="ctl ctl--solid" type="button" data-checkout="vault">
+        <button class="ctl ctl--solid" type="button" data-wld-open>
           <span class="ctl__label">Choose Vault</span>
           <span class="ctl__icon" aria-hidden="true">
             <svg viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5"
@@ -5313,23 +5313,6 @@ window.DearYou = window.DearYou || {};
   apply('yearly');
 })();
 
-/* ---------------------------------------------------------------------
-   Pricing CTAs -> checkout. The paid tiers carry data-checkout="vault" /
-   "forever"; Vault also hands the checkout the billing period currently
-   selected on the toggle above, so the choice made here carries over.
-   --------------------------------------------------------------------- */
-(() => {
-  const activeBilling = () => {
-    const on = document.querySelector('[data-billing][aria-pressed="true"]');
-    return on ? on.dataset.billing : 'yearly';
-  };
-  document.querySelectorAll('[data-checkout]').forEach(btn =>
-    btn.addEventListener('click', () => {
-      const plan = btn.dataset.checkout;
-      const q = plan === 'vault' ? `?plan=vault&billing=${activeBilling()}` : `?plan=${plan}`;
-      window.location.href = 'checkout.html' + q;
-    }));
-})();
 
 /* ---------------------------------------------------------------------
    Founder note. Shown once, as a card over the page on the first visit.
