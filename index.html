@@ -1817,6 +1817,9 @@ button.nav__cell{background:none; border-top:0; border-bottom:0; border-left:0; 
   text-transform:uppercase; font-weight:var(--weight-medium);
   color:var(--swatch-red-300);
 }
+/* The saving flag sits on the paper (non-featured) Annual card, so it needs a
+   darker red than the red-300 used on the wine featured card. */
+.tier__flag--save{color:var(--swatch-red-700);}
 .tier__name{
   margin:0; font-family:var(--font-sans); font-weight:var(--weight-medium);
   font-size:var(--size-heading); letter-spacing:0; text-transform:none;
@@ -3225,28 +3228,17 @@ html.intro-hold [data-words] .w{
       <h2 class="display pricing__title">
         Priced so you never have to<br><em class="serif">take anything out.</em>
       </h2>
-
-      <div class="billing" role="group" aria-label="Billing period">
-        <button class="billing__opt" type="button" data-billing="monthly" aria-pressed="false">Monthly</button>
-        <!-- 12 months at $9.99 is $119.88; the yearly total is $99.99, a saving
-             of ~17% ($19.89). Keep this badge in step with those figures. -->
-        <button class="billing__opt" type="button" data-billing="yearly" aria-pressed="true">
-          Yearly <span class="billing__save">Save 17%</span>
-        </button>
-      </div>
     </div>
 
     <div class="pricing__grid">
 
       <article class="tier">
-        <h3 class="tier__name">Free trial</h3>
+        <h3 class="tier__name">Trial</h3>
         <p class="tier__price"><span class="tier__amount">Free</span></p>
-        <!-- Stated outright, so the Monthly/Yearly switch visibly does not
-             apply to this card. -->
         <p class="tier__terms">For 7 days</p>
         <p class="tier__desc">
-          Everything in DearYou for a week. 50 GB of storage from the moment you
-          create your account, no commitment.
+          Everything in DearYou for a week, end-to-end encrypted. No commitment,
+          cancel before it ends and you are not charged.
         </p>
         <button class="ctl ctl--outline" type="button" data-wld-open>
           <span class="ctl__label">Start free trial</span>
@@ -3259,15 +3251,16 @@ html.intro-hold [data-words] .w{
 
       <article class="tier tier--featured">
         <p class="tier__flag">Most families</p>
-        <h3 class="tier__name">Vault</h3>
-        <p class="tier__price"><span class="tier__amount" data-vault-amount>$99.99</span></p>
-        <p class="tier__terms" data-vault-terms>Per year</p>
+        <h3 class="tier__name">Monthly</h3>
+        <p class="tier__price"><span class="tier__amount">$9.99</span></p>
+        <p class="tier__terms">Per month</p>
         <p class="tier__desc">
-          Unlimited letters, voice and video. Scheduled release, birthday
-          triggers, one named trustee, and 50 GB of full-quality storage.
+          Unlimited letters, voice, photos and video, all end-to-end encrypted.
+          Scheduled release, birthday triggers, one named trustee, and 50 GB of
+          full-quality storage.
         </p>
         <button class="ctl ctl--solid" type="button" data-wld-open>
-          <span class="ctl__label">Choose Vault</span>
+          <span class="ctl__label">Choose monthly</span>
           <span class="ctl__icon" aria-hidden="true">
             <svg viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5"
               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -3276,13 +3269,21 @@ html.intro-hold [data-words] .w{
       </article>
 
       <article class="tier">
-        <h3 class="tier__name">Extra storage</h3>
-        <p class="tier__price"><span class="tier__amount">$4.99</span></p>
-        <p class="tier__terms">Per month &middot; each 25 GB</p>
+        <p class="tier__flag tier__flag--save">Save 17%</p>
+        <h3 class="tier__name">Annual</h3>
+        <p class="tier__price"><span class="tier__amount">$99.99</span></p>
+        <p class="tier__terms">Per year</p>
         <p class="tier__desc">
-          Need more room? Add 25 GB at a time to either plan, whenever you fill
-          up your 50 GB. Added to your monthly or yearly bill.
+          Everything in the monthly plan, end-to-end encrypted and billed once a
+          year &mdash; a 17% saving on twelve months.
         </p>
+        <button class="ctl ctl--outline" type="button" data-wld-open>
+          <span class="ctl__label">Choose annual</span>
+          <span class="ctl__icon" aria-hidden="true">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
       </article>
 
     </div>
@@ -5283,35 +5284,6 @@ window.DearYou = window.DearYou || {};
   });
 })();
 
-/* ---------------------------------------------------------------------
-   Pricing: the Monthly/Yearly switch governs the Vault tier only. The free
-   trial and the extra-storage add-on state their own terms and sit still
-   while this changes.
-   --------------------------------------------------------------------- */
-(() => {
-  // Canonical pricing: $9.99/month or $99.99/year, both on 50 GB. The monthly
-  // card shows the monthly rate; the yearly card shows the annual total.
-  const VAULT = {
-    monthly: { amount: '$9.99',   terms: 'Per month' },
-    yearly:  { amount: '$99.99', terms: 'Per year' }
-  };
-
-  const opts   = [...document.querySelectorAll('[data-billing]')];
-  const amount = document.querySelector('[data-vault-amount]');
-  const terms  = document.querySelector('[data-vault-terms]');
-  if (!opts.length || !amount || !terms) return;
-
-  const apply = period => {
-    const v = VAULT[period];
-    if (!v) return;
-    amount.textContent = v.amount;
-    terms.textContent  = v.terms;
-    opts.forEach(o => o.setAttribute('aria-pressed', String(o.dataset.billing === period)));
-  };
-
-  opts.forEach(o => o.addEventListener('click', () => apply(o.dataset.billing)));
-  apply('yearly');
-})();
 
 
 /* ---------------------------------------------------------------------
