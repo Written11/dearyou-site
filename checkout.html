@@ -343,18 +343,18 @@ body{ min-height:100vh; }
       <div class="billing" role="group" aria-label="Billing period" data-billing-wrap>
         <button class="billing__opt" type="button" data-billing="monthly" aria-pressed="false">Monthly</button>
         <button class="billing__opt" type="button" data-billing="yearly" aria-pressed="true">
-          Yearly <span class="billing__save">Save 25%</span>
+          Yearly <span class="billing__save">Save 8%</span>
         </button>
       </div>
 
       <ul class="summary__feats" data-sum-feats></ul>
 
       <div class="summary__lines">
-        <div class="line"><span data-sum-itemname>Vault, yearly</span><span data-sum-itemprice>$108.00</span></div>
+        <div class="line"><span data-sum-itemname>Vault, yearly</span><span data-sum-itemprice>$109.99</span></div>
         <div class="line" data-sum-billedrow><span>Billed</span><span data-sum-billed>Once a year</span></div>
         <div class="line line--total">
           <span class="line__k">Due today</span>
-          <span class="line__v" data-sum-total>$108.00</span>
+          <span class="line__v" data-sum-total>$109.99</span>
         </div>
         <p class="line__note" data-sum-foot></p>
       </div>
@@ -481,9 +481,9 @@ body{ min-height:100vh; }
 (() => {
   const money = n => '$' + n.toFixed(2);
 
-  // Matches the landing page: Vault is a monthly rate ($12, or $9 billed
-  // yearly); Forever is a single payment. Yearly total = 12 x the monthly
-  // yearly rate.
+  // Matches the landing page's pricing section: one Vault plan on 50 GB, at
+  // $9.99/month or a flat $109.99/year (not twelve monthly payments). Each
+  // period carries its own total and its per-month equivalent for the footnote.
   const PLANS = {
     vault: {
       name: 'Vault',
@@ -492,22 +492,13 @@ body{ min-height:100vh; }
         'Unlimited letters, voice & video',
         'Scheduled release & birthday triggers',
         'One named trustee',
-        'Full-quality storage for every child'
+        '50 GB of full-quality storage'
       ],
       billed: true,
-      rates: { monthly: 12, yearly: 9 }   // per month
-    },
-    forever: {
-      name: 'Forever',
-      blurb: 'Everything in Vault, held for life — endowed storage, no renewals to miss, no lapsed card to close the vault.',
-      feats: [
-        'Everything in Vault, for life',
-        'One payment, no renewals',
-        'Endowed storage',
-        'Named trustee & full-quality storage'
-      ],
-      billed: false,
-      oneTime: 390
+      rates: {
+        monthly: { total: 9.99,   perMonth: 9.99 },
+        yearly:  { total: 109.99, perMonth: 109.99 / 12 }
+      }
     }
   };
 
@@ -545,17 +536,16 @@ body{ min-height:100vh; }
     let total, itemLabel, billedText, foot, payLabel;
 
     if (plan.billed) {
-      const perMonth = plan.rates[period];
+      const rate = plan.rates[period];
+      total = rate.total;
       if (period === 'yearly') {
-        total = perMonth * 12;
         itemLabel = `${plan.name}, yearly`;
         billedText = `${money(total)} once a year`;
-        foot = `That’s ${money(perMonth)}/mo, billed annually. Renews yearly. Cancel anytime.`;
+        foot = `That’s ${money(rate.perMonth)}/mo, billed annually. Starts with a 7-day free trial. Renews yearly, cancel anytime.`;
       } else {
-        total = perMonth;
         itemLabel = `${plan.name}, monthly`;
         billedText = `${money(total)} each month`;
-        foot = `${money(perMonth)}/mo. Renews monthly. Cancel anytime.`;
+        foot = `${money(rate.perMonth)}/mo. Starts with a 7-day free trial. Renews monthly, cancel anytime.`;
       }
       billedRow.hidden = false;
       payLabel = `Pay ${money(total)}`;

@@ -3228,11 +3228,10 @@ html.intro-hold [data-words] .w{
 
       <div class="billing" role="group" aria-label="Billing period">
         <button class="billing__opt" type="button" data-billing="monthly" aria-pressed="false">Monthly</button>
-        <!-- NOTE: the tiers price Vault at $12 monthly against $9 billed
-             yearly, which is a 25% saving, not 20%. Left as asked — change
-             the number here if it should match the arithmetic. -->
+        <!-- $9.99/mo is $119.88 a year against $109.99 billed yearly — a saving
+             of about 8%. Keep this badge in step with those figures. -->
         <button class="billing__opt" type="button" data-billing="yearly" aria-pressed="true">
-          Yearly <span class="billing__save">20% off</span>
+          Yearly <span class="billing__save">Save 8%</span>
         </button>
       </div>
     </div>
@@ -3240,17 +3239,17 @@ html.intro-hold [data-words] .w{
     <div class="pricing__grid">
 
       <article class="tier">
-        <h3 class="tier__name">Open</h3>
+        <h3 class="tier__name">Free trial</h3>
         <p class="tier__price"><span class="tier__amount">Free</span></p>
         <!-- Stated outright, so the Monthly/Yearly switch visibly does not
              apply to this card. -->
-        <p class="tier__terms">Free forever</p>
+        <p class="tier__terms">For 7 days</p>
         <p class="tier__desc">
-          Ten sealed entries. Letters and photographs. Release by hand whenever
-          you choose. No card, no trial clock.
+          Everything in DearYou for a week. 50 GB of storage from the moment you
+          create your account, no commitment.
         </p>
-        <button class="ctl ctl--outline" type="button" data-waitlist>
-          <span class="ctl__label">Start free</span>
+        <button class="ctl ctl--outline" type="button" data-wld-open>
+          <span class="ctl__label">Start free trial</span>
           <span class="ctl__icon" aria-hidden="true">
             <svg viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5"
               stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -3261,11 +3260,11 @@ html.intro-hold [data-words] .w{
       <article class="tier tier--featured">
         <p class="tier__flag">Most families</p>
         <h3 class="tier__name">Vault</h3>
-        <p class="tier__price"><span class="tier__amount" data-vault-amount>$9</span></p>
-        <p class="tier__terms" data-vault-terms>Per month, billed yearly</p>
+        <p class="tier__price"><span class="tier__amount" data-vault-amount>$109.99</span></p>
+        <p class="tier__terms" data-vault-terms>Per year</p>
         <p class="tier__desc">
           Unlimited letters, voice and video. Scheduled release, birthday
-          triggers, one named trustee, and full-quality storage for every child.
+          triggers, one named trustee, and 50 GB of full-quality storage.
         </p>
         <button class="ctl ctl--solid" type="button" data-checkout="vault">
           <span class="ctl__label">Choose Vault</span>
@@ -3277,20 +3276,13 @@ html.intro-hold [data-words] .w{
       </article>
 
       <article class="tier">
-        <h3 class="tier__name">Forever</h3>
-        <p class="tier__price"><span class="tier__amount">$390</span></p>
-        <p class="tier__terms">One payment</p>
+        <h3 class="tier__name">Extra storage</h3>
+        <p class="tier__price"><span class="tier__amount">$4.99</span></p>
+        <p class="tier__terms">Per month &middot; each 25 GB</p>
         <p class="tier__desc">
-          Everything in Vault, held for life with no renewals to miss. Endowed
-          storage, so a lapsed card can never close the vault on your loved ones.
+          Need more room? Add 25 GB at a time to either plan, whenever you fill
+          up your 50 GB. Added to your monthly or yearly bill.
         </p>
-        <button class="ctl ctl--outline" type="button" data-checkout="forever">
-          <span class="ctl__label">Choose Forever</span>
-          <span class="ctl__icon" aria-hidden="true">
-            <svg viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6.5 1.5 11 6l-4.5 4.5"
-              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </button>
       </article>
 
     </div>
@@ -5292,19 +5284,16 @@ window.DearYou = window.DearYou || {};
 })();
 
 /* ---------------------------------------------------------------------
-   Pricing: the Monthly/Yearly switch governs the Vault tier only. Open is
-   free and Forever is a single payment, so both state their own terms and
-   sit still while this changes.
+   Pricing: the Monthly/Yearly switch governs the Vault tier only. The free
+   trial and the extra-storage add-on state their own terms and sit still
+   while this changes.
    --------------------------------------------------------------------- */
 (() => {
-  // Real figures, taken from the component in your own build:
-  //   vaultPrice:  yearly ? "$9" : "$12"
-  //   vaultPeriod: yearly ? "Per month, billed yearly" : "Per month"
-  // Note both are monthly rates — the yearly option is a cheaper per-month
-  // price billed annually, not an annual total.
+  // Canonical pricing: $9.99/month or $109.99/year, both on 50 GB. The monthly
+  // card shows the monthly rate; the yearly card shows the annual total.
   const VAULT = {
-    monthly: { amount: '$12', terms: 'Per month' },
-    yearly:  { amount: '$9',  terms: 'Per month, billed yearly' }
+    monthly: { amount: '$9.99',   terms: 'Per month' },
+    yearly:  { amount: '$109.99', terms: 'Per year' }
   };
 
   const opts   = [...document.querySelectorAll('[data-billing]')];
